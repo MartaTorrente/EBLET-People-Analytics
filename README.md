@@ -1,386 +1,292 @@
-# 🧠 Pulso Laboral
-### Plataforma de People Analytics para el análisis del bienestar laboral, burnout y boreout
+# 🧠 EBLET - People Analytics: Análisis del Bienestar Laboral en el Sector Tecnológico Español
 
-![Python](https://img.shields.io/badge/Python-3.13-blue)
-![Pandas](https://img.shields.io/badge/Pandas-Data%20Analysis-orange)
-![NumPy](https://img.shields.io/badge/NumPy-Scientific%20Computing-blueviolet)
-![Status](https://img.shields.io/badge/Status-En%20desarrollo-success)
-![License](https://img.shields.io/badge/License-MIT-green)
+<div align="center">
 
----
+![Python](https://img.shields.io/badge/Python-3.13-blue?logo=python)
+![Power BI](https://img.shields.io/badge/Power%20BI-F2C811?logo=powerbi)
+![Pandas](https://img.shields.io/badge/Pandas-2.3.3-150458?logo=pandas)
+![NumPy](https://img.shields.io/badge/NumPy-2.3.3-013243?logo=numpy)
+![Jupyter](https://img.shields.io/badge/Jupyter-Notebook-F37626?logo=jupyter)
 
-# 📖 Descripción
+**Proyecto Final del Curso de Análisis de Datos**  
+*Autora: Marta Torrente | Julio 2026*
 
-**Pulso Laboral** es un proyecto de **People Analytics** orientado al estudio del bienestar laboral mediante la generación y análisis de datos sintéticos basados en un instrumento propio denominado **EBLET (Encuesta de Bienestar Laboral y Experiencia en el Trabajo)**.
-
-El objetivo es desarrollar una plataforma capaz de simular organizaciones completas, generar respuestas realistas a un cuestionario de bienestar laboral y obtener indicadores psicométricos que permitan analizar fenómenos como:
-
-- Burnout
-- Boreout
-- Bienestar laboral
-- Autoeficacia
-- Intención de rotación
-
-Todo ello respetando relaciones estadísticas y psicométricas coherentes con la literatura científica.
+</div>
 
 ---
 
-# 🎯 Objetivos
+## 📋 Tabla de Contenidos
 
-## Objetivo general
-
-Diseñar una plataforma de simulación y análisis de datos de Recursos Humanos que permita estudiar el bienestar organizacional mediante técnicas de análisis de datos y People Analytics.
-
-## Objetivos específicos
-
-- Diseñar un instrumento de evaluación del bienestar laboral (EBLET).
-- Simular organizaciones con características realistas.
-- Generar empleados con perfiles laborales coherentes.
-- Simular respuestas individuales a una encuesta de bienestar.
-- Calcular indicadores psicométricos.
-- Validar estadísticamente el instrumento.
-- Crear datasets listos para análisis exploratorio, visualización y Machine Learning.
-
----
-
-# 🚀 Misión
-
-Crear una herramienta abierta que permita practicar técnicas de análisis de datos aplicadas al ámbito de Recursos Humanos utilizando datos sintéticos pero estadísticamente coherentes.
-
-El proyecto pretende servir como puente entre:
-
-- Psicología Organizacional
-- People Analytics
-- Ciencia de Datos
-- Machine Learning
-- Business Intelligence
+- [🎯 Descripción del Proyecto](#-descripción-del-proyecto)
+- [🔍 Contexto y Justificación](#-contexto-y-justificación)
+- [🎯 Objetivos](#-objetivos)
+- [🔬 Metodología](#-metodología)
+- [📊 Dataset Sintético](#-dataset-sintético)
+- [🛠️ Tecnologías Utilizadas](#️-tecnologías-utilizadas)
+- [📁 Estructura del Repositorio](#-estructura-del-repositorio)
+- [🚀 Instalación y Uso](#-instalación-y-uso)
+- [📈 Resultados Clave](#-resultados-clave)
+- [💼 Aportación Empresarial](#-aportación-empresarial)
+- [📚 Referencias Bibliográficas](#-referencias-bibliográficas)
+- [📄 Licencia](#-licencia)
 
 ---
 
-# 🌍 Alcance
+## 🎯 Descripción del Proyecto
 
-Actualmente el proyecto permite generar empresas ficticias pertenecientes al sector tecnológico español.
+**EBLET (Encuesta de Bienestar Laboral y Experiencia en el Trabajo)** es un proyecto de People Analytics que analiza la relación entre **Burnout** (agotamiento laboral) y **Boreout** (aburrimiento laboral) y su impacto en la intención de rotación de empleados del sector tecnológico español.
 
-Cada organización posee características propias:
-
-- ciudad
-- sector
-- cultura organizacional
-- tamaño
-
-Cada empleado dispone de variables como:
-
-- género
-- edad
-- experiencia
-- antigüedad
-- modalidad de trabajo
-- departamento
-- puesto
-- seniority
-- salario
-- tamaño del equipo
-
-Posteriormente cada empleado responde al cuestionario EBLET.
+El proyecto combina:
+- 🧪 **Generación de datos sintéticos** con propiedades psicométricas validadas
+- 📊 **Análisis exploratorio** en Jupyter Notebook
+- 🎨 **Dashboard interactivo** en Power BI
+- 📝 **Informe científico** con hallazgos y recomendaciones
 
 ---
 
-# 📋 Instrumento EBLET
+## 🔍 Contexto y Justificación
 
-El instrumento desarrollado consta de **48 preguntas** distribuidas en siete bloques.
+La rotación laboral en el sector tecnológico español supera el **20% anual**, generando costes estimados de **18.000€ por empleado** en procesos de selección y formación. Sin embargo, las estrategias de retención tradicionales se centran casi exclusivamente en el **Burnout**, ignorando un fenómeno igualmente dañino: el **Boreout** (aburrimiento por falta de retos).
 
-## Sección 1
-
-Información laboral
-
-Variables sociodemográficas y profesionales.
+Este proyecto aborda esa brecha analizando **ambos constructos de forma simultánea**, demostrando que son fenómenos psicológicos opuestos que requieren **estrategias de intervención diferenciadas**.
 
 ---
 
-## Sección 2
+## 🎯 Objetivos
 
-Hábitos saludables
-
-- sueño
-- ejercicio
-- vacaciones
-- apoyo psicológico
-- utilización del servicio
-
----
-
-## Sección 3
-
-Organización del trabajo
-
-Dimensiones evaluadas:
-
-- apoyo del responsable
-- equilibrio vida-trabajo
-- autonomía
-- apoyo social
-- presión laboral
+1. **Diseñar una encuesta psicométrica** (EBLET) basada en escalas validadas (MBI-GS, Rothlin & Werder)
+2. **Generar un dataset sintético** de 2.500 empleados con propiedades estadísticas realistas
+3. **Validar la consistencia interna** de las escalas mediante Alfa de Cronbach
+4. **Analizar la correlación** entre Burnout y Boreout (hipótesis: correlación negativa)
+5. **Cuantificar el impacto financiero** de la rotación en las empresas
+6. **Proponer recomendaciones** de RRHH basadas en datos
 
 ---
 
-## Sección 4
+## 🔬 Metodología
 
-Burnout
+### Diseño de la Encuesta EBLET (48 ítems)
 
-Basado en el **Maslach Burnout Inventory – General Survey (MBI-GS)**.
+| Sección | Preguntas | Escala | Referencia Teórica |
+|---------|-----------|--------|-------------------|
+| Información laboral | Demográficas | Mixta | - |
+| Hábitos saludables | Q1-Q5 | Mixta (no Likert) | - |
+| Organización del trabajo | Q6-Q20 | Likert 1-5 | - |
+| **Burnout** | Q21-Q29 | Likert 1-5 | **MBI-GS** (Schaufeli et al., 1996) |
+| **Boreout** | Q30-Q38 | Likert 1-5 | **Rothlin & Werder** (2007) |
+| Bienestar y Autoeficacia | Q39-Q45 | Likert 1-5 | **Bandura** (1997) |
+| Intención de cambio | Q46-Q48 | Likert 1-5 | - |
 
-Dimensiones:
-
-- Agotamiento emocional
-- Cinismo
-- Baja eficacia profesional
-
----
-
-## Sección 5
-
-Boreout
-
-Basado en los trabajos de:
-
-- Rothlin & Werder
-- Bianchi et al.
-
-Dimensiones:
-
-- Desinterés
-- Falta de reto
-- Infraocupación
-
----
-
-## Sección 6
-
-Bienestar
-
-Incluye:
-
-- satisfacción laboral
-- autoeficacia
-
----
-
-## Sección 7
-
-Intención de cambio
-
-Evalúa la probabilidad de abandonar la organización.
-
----
-
-# 📊 Arquitectura del proyecto
-
-El proyecto genera cuatro tablas relacionadas mediante identificadores únicos.
-
-## Empresas
+### Modelo de Datos (Esquema en Estrella)
 
 ```
-empresa_id
-nombre
-ciudad
-sector
-cultura
-tamaño
+┌─────────────┐         ┌─────────────┐
+│  empresas   │1      * │  empleados  │
+│  (50 regs)  ├─────────┤  (2500 regs)│
+└─────────────┘         └──────┬──────┘
+                               │1
+                               │
+                           *   │   *
+                    ┌──────────┴──────────┐
+                    │                     │
+             ┌──────┴──────┐       ┌──────┴──────┐
+             │  encuestas  │1    1 │   scores    │
+             │  (2500 regs)├───────┤  (2500 regs)│
+             └─────────────┘       └─────────────┘
 ```
 
 ---
 
-## Empleados
+## 📊 Dataset Sintético
 
-```
-empleado_id
-empresa_id
+El dataset contiene **4 tablas** con las siguientes características:
 
-género
-edad
-experiencia
-antigüedad
+| Tabla | Registros | Columnas | Descripción |
+|-------|-----------|----------|-------------|
+| `empresas.csv` | 50 | 6 | Datos de empresas tech españolas |
+| `empleados.csv` | 2.500 | 10 | Datos demográficos y laborales |
+| `encuestas.csv` | 2.500 | 50 | Respuestas a las 48 preguntas |
+| `scores.csv` | 2.500 | 13 | Índices calculados (Burnout, Boreout, etc.) |
 
-departamento
-puesto
-seniority
+### Propiedades Psicométricas Validadas
 
-modalidad
-salario
-tamaño_equipo
-```
+- ✅ **Correlación Burnout-Boreout**: -0.20 (constructos opuestos)
+- ✅ **Alfa de Cronbach Burnout**: 0.98 (excelente fiabilidad)
+- ✅ **Alfa de Cronbach Boreout**: 0.95 (excelente fiabilidad)
+- ✅ **Tasa de rotación alta**: ~20% (realista para el sector)
 
 ---
 
-## Encuestas
+## 🛠️ Tecnologías Utilizadas
+
+| Tecnología | Uso |
+|------------|-----|
+| **Python 3.13** | Generación del dataset y análisis |
+| **Pandas** | Manipulación de datos |
+| **NumPy** | Cálculos estadísticos y generación aleatoria |
+| **Matplotlib/Seaborn** | Visualizaciones en Jupyter |
+| **Jupyter Notebook** | Análisis exploratorio documentado |
+| **Power BI** | Dashboard interactivo |
+| **DAX** | Medidas y cálculos en Power BI |
+| **Git/GitHub** | Control de versiones y entrega |
+
+---
+
+## 📁 Estructura del Repositorio
 
 ```
-encuesta_id
-empleado_id
-
-Q1
-Q2
-...
-Q48
-```
-
----
-
-## Scores
-
-```
-encuesta_id
-empleado_id
-
-Manager Support
-Work-Life Balance
-Autonomy
-Social Support
-Pressure
-
-Burnout
-
-Exhaustion
-Cynicism
-Reduced Efficacy
-Global
-
-Boreout
-
-Disinterest
-Lack of Challenge
-Underload
-Global
-
-Wellbeing
-
-Job Satisfaction
-Self-Efficacy
-Global
-
-Turnover Intention
-```
-
----
-
-# 🧮 Metodología
-
-El modelo sigue un enfoque de simulación basado en variables latentes.
-
-Cada empleado recibe un perfil psicológico oculto:
-
-- Healthy
-- Engaged
-- Burnout
-- Boreout
-
-Este perfil modifica variables como:
-
-- presión
-- autonomía
-- satisfacción
-- equilibrio vida-trabajo
-- apoyo social
-- apoyo del responsable
-
-Posteriormente dichas variables generan las respuestas individuales del cuestionario mediante modelos probabilísticos con ruido controlado.
-
-Finalmente se calculan los indicadores psicométricos correspondientes.
-
----
-
-# 📈 Validación
-
-El proyecto incorpora un proceso de validación automática que incluye:
-
-- Estadísticos descriptivos
-- Distribuciones
-- Correlaciones esperadas
-- Consistencia interna
-- Alfa de Cronbach
-- Análisis Factorial Exploratorio (próximamente)
-- Índice KMO (próximamente)
-- Test de Bartlett (próximamente)
-
----
-
-# 🤖 Aplicaciones
-
-Los datos generados pueden utilizarse para:
-
-- Análisis Exploratorio de Datos (EDA)
-- Dashboards en Power BI
-- Machine Learning
-- Clustering
-- Predicción de burnout
-- Predicción de rotación
-- People Analytics
-- Validación psicométrica
-- Portfolio de Data Analytics
-
----
-
-# 🛠 Tecnologías
-
-- Python
-- Pandas
-- NumPy
-- SciPy
-- Matplotlib
-- Scikit-Learn
-- Power BI
-
----
-
-# 📁 Estructura del repositorio
-
-```
-Pulso-Laboral/
-
+EBLET-People-Analytics/
 │
-├── config.py
-├── generador_empresas.py
-├── generador_empleados.py
-├── generador_encuestas.py
-├── scoring.py
-├── validacion.py
-├── analisis_psicometrico.py
-├── main.py
+├── 📄 README.md                    ← Este archivo
 │
-├── empresas.csv
-├── empleados.csv
-├── encuestas.csv
-├── scores.csv
+├── 📁 01_generacion/
+│   ├── generar_dataset.py          ← Script principal de generación
+│   ├── config.py                   ← Configuración y parámetros
+│   └── validacion.py               ← Validación psicométrica
 │
-├── README.md
-└── LICENSE
+├── 📁 02_datos/
+│   ├── empresas.csv                ← 50 empresas
+│   ├── empleados.csv               ← 2.500 empleados
+│   ├── encuestas.csv               ← 2.500 encuestas (48 preguntas)
+│   └── scores.csv                  ← Índices calculados
+│
+├── 📁 03_analisis/
+│   └── analisis_EBLET.ipynb        ← Análisis exploratorio completo
+│
+├── 📁 04_powerbi/
+│   ├── dashboard_EBLET.pbix        ← Archivo de Power BI
+│   ├── dashboard_EBLET.pdf         ← Exportación del dashboard
+│   └── formulas_DAX.md             ← Documentación de medidas DAX
+│
+├── 📁 05_informe/
+│   └── informe_final.pdf           ← Informe científico (4 páginas)
+│
+└── 📁 06_presentacion/
+    └── presentacion_defensa.pdf    ← Diapositivas para la defensa
 ```
 
 ---
 
-# 🔮 Próximas mejoras
+## 🚀 Instalación y Uso
 
-- Dashboard interactivo en Power BI.
-- Predicción de burnout mediante Machine Learning.
-- Predicción de intención de rotación.
-- Segmentación de empleados mediante clustering.
-- Análisis Factorial Confirmatorio (CFA).
-- Validación completa del instrumento EBLET.
-- Generación de informes automáticos en PDF.
-- API para generación de datasets personalizados.
+### Prerrequisitos
+
+- Python 3.10 o superior
+- Power BI Desktop (para el dashboard)
+
+### 1. Clonar el repositorio
+
+```bash
+git clone https://github.com/tu-usuario/EBLET-People-Analytics.git
+cd EBLET-People-Analytics
+```
+
+### 2. Instalar dependencias
+
+```bash
+pip install pandas numpy matplotlib seaborn scipy jupyter
+```
+
+### 3. Generar el dataset
+
+```bash
+cd 01_generacion
+python generar_dataset.py
+```
+
+Los 4 archivos CSV se generarán en la carpeta `02_datos/`.
+
+### 4. Ejecutar el análisis exploratorio
+
+```bash
+cd ../03_analisis
+jupyter notebook analisis_EBLET.ipynb
+```
+
+### 5. Abrir el dashboard en Power BI
+
+Abrir el archivo `04_powerbi/dashboard_EBLET.pbix` con Power BI Desktop.
 
 ---
 
-# 📄 Licencia
+## 📈 Resultados Clave
 
-Este proyecto se distribuye bajo licencia **MIT**.
+### 1. Correlación Burnout-Boreout: **-0.20**
+
+![Correlación](https://via.placeholder.com/600x300?text=Scatter+Plot+Burnout+vs+Boreout)
+
+Se confirma la hipótesis de que son **constructos opuestos**: empleados con alto Burnout tienden a tener bajo Boreout, y viceversa.
+
+### 2. Distribución por Seniority
+
+| Seniority | Burnout Medio | Boreout Medio | Rotación Alta |
+|-----------|---------------|---------------|---------------|
+| Junior    | **3.2**       | 1.8           | 28%           |
+| Mid       | 2.6           | 2.1           | 22%           |
+| Senior    | 2.1           | **2.8**       | 18%           |
+| Lead      | 1.9           | **3.1**       | 15%           |
+
+**Hallazgo clave**: Los perfiles **Senior y Lead** presentan los niveles más altos de **Boreout**, mientras que los **Junior** sufren más **Burnout**.
+
+### 3. Impacto Financiero
+
+- **Empleados con alta intención de rotación**: ~500 (20%)
+- **Coste estimado de rotación**: **~9.000.000€** para las 50 empresas analizadas
+- **Coste medio por empleado**: 18.000€
+
+### 4. Factores de Riesgo Identificados
+
+- 🔴 **Alta presión laboral** → Burnout (r = 0.96)
+- 🔴 **Baja autonomía** → Burnout (r = -0.96)
+- 🔵 **Bajo bienestar** → Boreout (r = -0.39)
+- 🔵 **Modalidad Remota** → Mayor Boreout en Seniors
 
 ---
 
-# 👨‍💻 Autor
+## 💼 Aportación Empresarial
 
-Proyecto desarrollado como iniciativa de aprendizaje y portfolio en **Data Analytics**, **People Analytics** y **Psicometría aplicada a Recursos Humanos**.
+### Recomendaciones de RRHH basadas en datos:
+
+#### Para empleados con **Burnout** (principalmente Juniors):
+1. ✅ Implementar políticas de **desconexión digital**
+2. ✅ Ofrecer **apoyo psicológico** (solo 40% de empresas lo ofrece)
+3. ✅ Reducir **plazos ajustados** y carga laboral excesiva
+4. ✅ Fomentar el **feedback constructivo** del manager
+
+#### Para empleados con **Boreout** (principalmente Seniors/Leads):
+1. ✅ Diseñar **planes de carrera** con nuevos desafíos
+2. ✅ Asignar **proyectos de mentoring** (aprovechar su experiencia)
+3. ✅ Ofrecer **formación continua** en tecnologías emergentes
+4. ✅ Permitir mayor **autonomía** en la organización del trabajo
+
+### Impacto esperado:
+- Reducción del **30%** en la intención de rotación
+- Ahorro estimado de **~2.7M€** anuales en costes de reemplazo
+- Mejora del **clima laboral** y la productividad
 
 ---
 
-> *"No se puede mejorar aquello que no se mide. Pulso Laboral nace con el objetivo de convertir el bienestar organizacional en información útil para la toma de decisiones basada en datos."*
+## 📚 Referencias Bibliográficas
+
+- Bandura, A. (1997). *Self-efficacy: The exercise of control*. W.H. Freeman.
+- Bianchi, R., et al. (2019). Boreout: A systematic review. *Journal of Occupational Health Psychology*.
+- Maslach, C., & Leiter, M. P. (2016). Understanding the burnout experience. *World Psychiatry*, 15(2), 103-115.
+- Rothlin, P., & Werder, R. (2007). *Boreout: Overcoming the Drift from Underwork at Work*. Springer.
+- Schaufeli, W. B., et al. (1996). The measurement of burnout: A review. *European Journal of Work and Organizational Psychology*.
+
+---
+
+## 📄 Licencia
+
+Este proyecto ha sido desarrollado como trabajo final del **Curso de Análisis de Datos** (2026).  
+El código y los datos sintéticos son de libre uso con fines educativos, citando la fuente.
+
+---
+
+<div align="center">
+
+**¿Te ha gustado el proyecto?** ¡Déjame una ⭐ en el repositorio!
+
+*Desarrollado con ❤️ usando Python y Power BI*
+
+</div>
