@@ -1,13 +1,11 @@
 import numpy as np
 
-# =====================================================
-# EBLET - PEOPLE ANALYTICS FRAMEWORK
-# CONFIGURACIÓN CENTRAL DEL SISTEMA
-# =====================================================
 
-# =====================================================
+# CONFIGURACIÓN CENTRAL DEL SISTEMA
+
+
 # 1. ESCENARIOS ORGANIZACIONALES
-# =====================================================
+
 
 SCENARIOS = {
     "saludable": {
@@ -72,9 +70,8 @@ SCENARIOS = {
     }
 }
 
-# =====================================================
-# 2. EFECTOS PSICOLÓGICOS GLOBALMENTE FIJOS
-# =====================================================
+# 2. EFECTOS PSICOLÓGICOS FIJOS
+
 
 CULTURE_EFFECTS = {
     "Innovadora":   {"burnout": -0.15, "boreout": -0.10, "wellbeing": +0.20},
@@ -97,9 +94,8 @@ DEPARTMENT_EFFECTS = {
     "Ventas":     {"burnout": +0.30, "boreout": -0.15}
 }
 
-# =====================================================
 # 3. ESCALAS DEL MODELO
-# =====================================================
+
 
 LIKERT_MIN = 1
 LIKERT_MAX = 5
@@ -107,9 +103,9 @@ LIKERT_MAX = 5
 N_EMPLEADOS_DEFAULT = 2500
 N_EMPRESAS_DEFAULT = 50
 
-# =====================================================
+
 # 4. UMBRALES DE CLASIFICACIÓN
-# =====================================================
+
 
 UMBRALES = {
     "burnout_alto": 3.5,

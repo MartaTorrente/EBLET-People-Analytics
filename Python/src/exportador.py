@@ -2,12 +2,12 @@ import pandas as pd
 import os
 from pathlib import Path
 
-# =====================================================
+
 # EXPORTADOR DE DATASETS EBLET
-# =====================================================
+
 # Gestiona la exportación de datasets a CSV
 # organizados por escenario.
-# =====================================================
+
 
 
 def crear_directorios():
@@ -20,7 +20,7 @@ def crear_directorios():
     for escenario in escenarios:
         Path(f"datasets/{escenario}").mkdir(parents=True, exist_ok=True)
     
-    print("✅ Directorios de datasets creados")
+    print(" Directorios de datasets creados")
 
 
 def exportar_dataset_escenario(df_empresas, df_empleados, escenario):
@@ -46,7 +46,7 @@ def exportar_dataset_escenario(df_empresas, df_empleados, escenario):
     df_kpis = calcular_kpis_empresa(df_empleados)
     df_kpis.to_csv(f"{ruta_base}/kpis_empresa.csv", index=False)
     
-    print(f"✅ Dataset '{escenario}' exportado:")
+    print(f" Dataset '{escenario}' exportado:")
     print(f"   - {len(df_empresas)} empresas")
     print(f"   - {len(df_empleados)} empleados")
     print(f"   - Ruta: {ruta_base}/")
@@ -65,7 +65,7 @@ def exportar_dataset_completo(df_empresas_todas, df_empleados_todos):
     df_empresas_todas.to_csv("datasets/empresas_todas.csv", index=False)
     df_empleados_todos.to_csv("datasets/empleados_todos.csv", index=False)
     
-    print(f"\n✅ Dataset completo exportado:")
+    print(f"\n Dataset completo exportado:")
     print(f"   - {len(df_empresas_todas)} empresas totales")
     print(f"   - {len(df_empleados_todos)} empleados totales")
 
@@ -114,11 +114,11 @@ def resumen_datasets():
             total_empresas += n_empresas
             total_empleados += n_empleados
             
-            print(f"\n📊 {escenario.upper()}:")
+            print(f"\n {escenario.upper()}:")
             print(f"   Empresas: {n_empresas}")
             print(f"   Empleados: {n_empleados}")
         else:
-            print(f"\n⚠️  {escenario.upper()}: No encontrado")
+            print(f"\n {escenario.upper()}: No encontrado")
     
     print("\n" + "="*60)
     print(f"TOTAL: {total_empresas} empresas, {total_empleados} empleados")

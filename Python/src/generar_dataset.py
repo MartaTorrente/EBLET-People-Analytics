@@ -7,12 +7,8 @@ from encuesta import generar_respuestas_encuesta
 from scores import calcular_kpis_empleado, calcular_kpis_empresa, clasificar_escenario_empresa, validar_clasificacion
 from exportador import exportar_dataset_escenario, exportar_dataset_completo, crear_directorios, resumen_datasets
 
-# =====================================================
+
 # GENERADOR PRINCIPAL DE DATASETS EBLET
-# =====================================================
-# Orquesta todo el pipeline de generación de datos
-# sintéticos para los 5 escenarios organizacionales.
-# =====================================================
 
 
 def generar_dataset_escenario(escenario, n_empresas=50, n_empleados=2500, seed=42):
@@ -36,56 +32,55 @@ def generar_dataset_escenario(escenario, n_empresas=50, n_empleados=2500, seed=4
     # Configurar semilla para reproducibilidad
     np.random.seed(seed)
     
-    # =====================================================
+   
     # PASO 1: Generar empresas
-    # =====================================================
+   
     print(f"\n📋 Paso 1: Generando {n_empresas} empresas...")
     df_empresas = generar_empresas(escenario, n_empresas)
-    print(f"   ✅ {len(df_empresas)} empresas generadas")
+    print(f"   {len(df_empresas)} empresas generadas")
     
-    # =====================================================
     # PASO 2: Generar empleados
-    # =====================================================
+   
     print(f"\n👥 Paso 2: Generando {n_empleados} empleados...")
     df_empleados = generar_empleados(df_empresas, n_empleados)
-    print(f"   ✅ {len(df_empleados)} empleados generados")
+    print(f"    {len(df_empleados)} empleados generados")
     
-    # =====================================================
+   
     # PASO 3: Aplicar modelo psicológico
-    # =====================================================
-    print(f"\n🧠 Paso 3: Aplicando modelo psicológico...")
+    
+    print(f"\n Paso 3: Aplicando modelo psicológico...")
     latentes = construir_modelo_psicologico(df_empleados)
-    print(f"   ✅ Estados latentes calculados")
+    print(f"    Estados latentes calculados")
     print(f"      - Burnout medio: {latentes['burnout'].mean():.2f}")
     print(f"      - Boreout medio: {latentes['boreout'].mean():.2f}")
     print(f"      - Bienestar medio: {latentes['wellbeing'].mean():.2f}")
     print(f"      - Rotación media: {latentes['rotation'].mean():.2f}")
     
-    # =====================================================
-    # PASO 4: Generar respuestas a encuesta
-    # =====================================================
-    print(f"\n📝 Paso 4: Generando respuestas a encuesta...")
-    df_respuestas = generar_respuestas_encuesta(df_empleados, latentes)
-    print(f"   ✅ {len(df_respuestas.columns)} preguntas generadas")
     
-    # =====================================================
+    # PASO 4: Generar respuestas a encuesta
+   
+    print(f"\n Paso 4: Generando respuestas a encuesta...")
+    df_respuestas = generar_respuestas_encuesta(df_empleados, latentes)
+    print(f"    {len(df_respuestas.columns)} preguntas generadas")
+    
+    
     # PASO 5: Combinar empleados con respuestas
-    # =====================================================
+    
     df_empleados_completo = pd.concat([
         df_empleados.reset_index(drop=True),
         df_respuestas
     ], axis=1)
     
-    # =====================================================
+   
     # PASO 6: Calcular KPIs
-    # =====================================================
-    print(f"\n📊 Paso 5: Calculando KPIs...")
+    
+    print(f"\n Paso 5: Calculando KPIs...")
     df_empleados_con_kpis = calcular_kpis_empleado(df_empleados_completo)
-    print(f"   ✅ KPIs calculados a nivel empleado")
+    print(f"    KPIs calculados a nivel empleado")
     
     # =====================================================
     # PASO 7: Validar clasificación
-    # =====================================================
+    
     print(f"\n🔍 Paso 6: Validando clasificación de escenarios...")
     df_kpis_empresa = calcular_kpis_empresa(df_empleados_con_kpis)
     df_kpis_empresa = clasificar_escenario_empresa(df_kpis_empresa)
@@ -95,12 +90,12 @@ def generar_dataset_escenario(escenario, n_empresas=50, n_empleados=2500, seed=4
     total = len(df_validacion)
     precision = (aciertos / total) * 100
     
-    print(f"   ✅ Clasificación validada: {aciertos}/{total} correctas ({precision:.1f}%)")
+    print(f"    Clasificación validada: {aciertos}/{total} correctas ({precision:.1f}%)")
     
-    # =====================================================
+    
     # PASO 8: Exportar dataset
-    # =====================================================
-    print(f"\n💾 Paso 7: Exportando dataset...")
+    
+    print(f"\n Paso 7: Exportando dataset...")
     exportar_dataset_escenario(df_empresas, df_empleados_con_kpis, escenario)
     
     return df_empresas, df_empleados_con_kpis
@@ -119,7 +114,7 @@ def generar_todos_los_escenarios(n_empresas=50, n_empleados=2500):
     """
     
     print("\n" + "="*60)
-    print("🚀 INICIANDO GENERACIÓN DE DATASETS EBLET")
+    print(" INICIANDO GENERACIÓN DE DATASETS EBLET")
     print("="*60)
     
     # Crear directorios
@@ -158,9 +153,9 @@ def generar_todos_los_escenarios(n_empresas=50, n_empleados=2500):
     return df_empresas_todas, df_empleados_todos
 
 
-# =====================================================
+
 # EJECUCIÓN PRINCIPAL
-# =====================================================
+
 
 if __name__ == "__main__":
     # Generar datasets con configuración por defecto
@@ -173,8 +168,8 @@ if __name__ == "__main__":
     )
     
     print("\n" + "="*60)
-    print("✅ GENERACIÓN COMPLETADA EXITOSAMENTE")
+    print("GENERACIÓN COMPLETADA EXITOSAMENTE")
     print("="*60)
-    print(f"\n📁 Datasets disponibles en: datasets/")
-    print(f"📊 Total: {len(df_empresas)} empresas, {len(df_empleados)} empleados")
-    print("\n🚀 Siguiente paso: Ejecutar notebooks de análisis")
+    print(f"\n Datasets disponibles en: datasets/")
+    print(f" Total: {len(df_empresas)} empresas, {len(df_empleados)} empleados")
+    print("\n Siguiente paso: Ejecutar notebooks de análisis")

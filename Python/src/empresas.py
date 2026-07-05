@@ -3,9 +3,9 @@ import numpy as np
 
 from config import SCENARIOS, N_EMPRESAS_DEFAULT
 
-# =====================================================
+
 # GENERADOR DE EMPRESAS POR ESCENARIO
-# =====================================================
+
 
 def generar_empresas(escenario: str, n_empresas: int = N_EMPRESAS_DEFAULT):
     """
@@ -22,9 +22,9 @@ def generar_empresas(escenario: str, n_empresas: int = N_EMPRESAS_DEFAULT):
         "tamano": np.random.choice(["Micro", "Pequeña", "Mediana", "Grande"], n_empresas)
     })
 
-    # =====================================================
+   
     # ASIGNACIÓN DE CULTURA SEGÚN ESCENARIO
-    # =====================================================
+  
 
     culturas = list(cfg["culture_mix"].keys())
     probs = list(cfg["culture_mix"].values())
@@ -35,9 +35,9 @@ def generar_empresas(escenario: str, n_empresas: int = N_EMPRESAS_DEFAULT):
         p=probs
     )
 
-    # =====================================================
+   
     # METADATA DEL ESCENARIO
-    # =====================================================
+   
 
     empresas["escenario"] = escenario
 
@@ -49,9 +49,9 @@ def generar_empresas(escenario: str, n_empresas: int = N_EMPRESAS_DEFAULT):
     return empresas
 
 
-# =====================================================
-# GENERADOR MULTI-ESCENARIO (FRAMEWORK COMPLETO)
-# =====================================================
+
+# GENERADOR MULTI-ESCENARIO 
+
 
 def generar_empresas_todos_escenarios(n_empresas: int = N_EMPRESAS_DEFAULT):
     """

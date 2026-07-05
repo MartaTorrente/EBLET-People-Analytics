@@ -1,12 +1,8 @@
 import numpy as np
 import pandas as pd
 
-# =====================================================
+
 # GENERADOR DE RESPUESTAS A LA ENCUESTA EBLET
-# =====================================================
-# Transforma estados psicológicos latentes en respuestas
-# a las 48 preguntas de la encuesta.
-# =====================================================
 
 
 def generar_respuestas_encuesta(df, latentes):
@@ -24,9 +20,8 @@ def generar_respuestas_encuesta(df, latentes):
     n = len(df)
     respuestas = {}
     
-    # =====================================================
-    # SECCIÓN 3: CONTEXTO ORGANIZACIONAL (q6-q20)
-    # =====================================================
+   
+    # SECCIÓN 3: CONTEXTO ORGANIZACIONAL (q6-q20
     # Estas preguntas miden factores organizacionales
     # Usamos wellbeing_base como proxy de calidad del contexto
     
@@ -36,9 +31,9 @@ def generar_respuestas_encuesta(df, latentes):
             1, 5
         ).round().astype(int)
     
-    # =====================================================
+   
     # SECCIÓN 4: BURNOUT (q21-q29)
-    # =====================================================
+  
     # Preguntas 21-23: Agotamiento Emocional
     for q in range(21, 24):
         respuestas[f'q{q}'] = np.clip(
@@ -60,9 +55,9 @@ def generar_respuestas_encuesta(df, latentes):
             1, 5
         ).round().astype(int)
     
-    # =====================================================
+ 
     # SECCIÓN 5: BOREOUT (q30-q38)
-    # =====================================================
+  
     # Preguntas 30-32: Desinterés
     for q in range(30, 33):
         respuestas[f'q{q}'] = np.clip(
@@ -84,9 +79,9 @@ def generar_respuestas_encuesta(df, latentes):
             1, 5
         ).round().astype(int)
     
-    # =====================================================
+   
     # SECCIÓN 6: BIENESTAR Y AUTOEFICACIA (q39-q45)
-    # =====================================================
+   
     # Preguntas 39-42: Bienestar/Satisfacción
     for q in range(39, 43):
         respuestas[f'q{q}'] = np.clip(
@@ -101,9 +96,9 @@ def generar_respuestas_encuesta(df, latentes):
             1, 5
         ).round().astype(int)
     
-    # =====================================================
+   
     # SECCIÓN 7: INTENCIÓN DE ROTACIÓN (q46-q48)
-    # =====================================================
+   
     for q in range(46, 49):
         respuestas[f'q{q}'] = np.clip(
             latentes["rotation"] + np.random.normal(0, 0.3, n),

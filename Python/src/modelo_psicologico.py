@@ -1,23 +1,15 @@
 import numpy as np
 import pandas as pd
 
-# =====================================================
+
 # MODELO PSICOLÓGICO EBLET
-# =====================================================
+
 # Este módulo transforma variables organizacionales
 # en estados psicológicos latentes:
 # burnout, boreout, bienestar y rotación
-#
-# Basado en:
-# - JD-R Model (Demerouti et al., 2001)
-# - Maslach Burnout Inventory (1981)
-# - Boreout theory (Rothlin & Werder, 2007)
-# =====================================================
 
-
-# =====================================================
 # EFECTOS TEÓRICOS ORGANIZACIONALES
-# =====================================================
+
 
 EFECTO_CULTURA = {
     "Innovadora": {
@@ -69,9 +61,9 @@ EFECTO_DEPARTAMENTO = {
 }
 
 
-# =====================================================
+
 # EFECTOS SOBRE LATENTES
-# =====================================================
+
 
 def aplicar_efectos(df, L_burnout, L_boreout, L_wellbeing):
     """
@@ -101,9 +93,9 @@ def aplicar_efectos(df, L_burnout, L_boreout, L_wellbeing):
     return L_burnout, L_boreout, L_wellbeing
 
 
-# =====================================================
-# ROTACIÓN (MODELO CAUSAL)
-# =====================================================
+
+# ROTACIÓN 
+
 
 def calcular_rotacion(L_burnout, L_boreout, L_wellbeing, noise=0.4):
     """
@@ -122,20 +114,17 @@ def calcular_rotacion(L_burnout, L_boreout, L_wellbeing, noise=0.4):
     return np.clip(rotacion, 1, 5)
 
 
-# =====================================================
 # PIPELINE COMPLETO DEL MODELO (CORREGIDO)
-# =====================================================
+
 
 def construir_modelo_psicologico(df):
     """
-    Ejecuta el modelo completo psicológico sobre un dataframe de empleados.
-    
-    ✅ CORRECCIÓN: Ahora usa los valores base del escenario de cada empresa.
+     usa los valores base del escenario de cada empresa.
     """
     
     n = len(df)
     
-    # ✅ USAR VALORES BASE DEL ESCENARIO
+    # USAR VALORES BASE DEL ESCENARIO
     L_burnout = np.random.normal(df["burnout_base"].values, 0.5, n)
     L_boreout = np.random.normal(df["boreout_base"].values, 0.5, n)
     L_wellbeing = np.random.normal(df["wellbeing_base"].values, 0.5, n)

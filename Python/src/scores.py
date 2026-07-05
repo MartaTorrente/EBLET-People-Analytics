@@ -1,12 +1,10 @@
 import pandas as pd
 import numpy as np
 
-# =====================================================
-# CALCULADORA DE KPIs EBLET
-# =====================================================
+
 # Calcula indicadores a nivel empleado y empresa
 # a partir de las respuestas a la encuesta.
-# =====================================================
+
 
 
 def calcular_kpis_empleado(df_respuestas):
@@ -37,9 +35,9 @@ def calcular_kpis_empleado(df_respuestas):
     # KPI Contexto: Media de preguntas 6-20
     df["kpi_contexto"] = df[[f'q{i}' for i in range(6, 21)]].mean(axis=1)
     
-    # =====================================================
-    # SUB-DIMENSIONES (opcional, para análisis detallado)
-    # =====================================================
+    
+    # SUB-DIMENSIONES 
+    
     
     # Burnout sub-dimensiones
     df["burnout_agotamiento"] = df[[f'q{i}' for i in range(21, 24)]].mean(axis=1)
