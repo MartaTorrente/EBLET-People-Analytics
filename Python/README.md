@@ -92,6 +92,60 @@ EBLET-People-Analytics/
 
 ---
 
+## 🚀 Instalación
+
+### 1. Clonar el repositorio
+
+```bash
+git clone https://github.com/tu-usuario/EBLET-People-Analytics.git
+cd EBLET-People-Analytics
+```
+
+### 2. Crear entorno virtual (recomendado)
+
+```bash
+# Windows
+python -m venv .venv
+.\.venv\Scripts\activate
+
+# Mac/Linux
+python3 -m venv .venv
+source .venv/bin/activate
+```
+
+### 3. Instalar dependencias
+
+```bash
+pip install -r requirements.txt
+```
+
+---
+
+## 📊 Uso Rápido
+
+### Generar datasets sintéticos
+
+```bash
+python src/generar_dataset.py
+```
+
+Esto generará:
+- 5 escenarios × 50 empresas × 50 empleados = **12,500 empleados**
+- 5 carpetas en `datasets/` con CSVs estructurados
+
+### Ejecutar análisis
+
+```bash
+# Abrir Jupyter
+jupyter notebook
+
+# Ejecutar notebooks en orden:
+# 1. notebooks/01_EDA_comparativo.ipynb
+# 2. notebooks/02_Analisis_profundo.ipynb
+# 3. notebooks/03_Clustering.ipynb
+```
+
+---
 
 ## 🧪 Metodología
 
@@ -154,10 +208,14 @@ El framework incluye 6 tipos de gráficos comparativos:
 
 ---
 
-
 ## 👥 Autores
 
-- **Marta Torrente** - *Proyecto final IT Academy* 
+- **Marta Torrente** - *Proyecto Final Data Analyst* 
+
+
+
+
+
 
 
 
