@@ -1,8 +1,9 @@
+"""
+EBLET v2.0 - Utilidades Generales
+"""
+
 import pandas as pd
 import numpy as np
-
-# =====================================================# UTILIDADES GENERALES EBLET
-
 
 
 def mostrar_info_dataframe(df, nombre="DataFrame"):
@@ -28,7 +29,7 @@ def calcular_estadisticos_latentes(df_empleados):
     
     stats = df_empleados[kpis].describe()
     
-    print("\n ESTADÍSTICOS DESCRIPTIVOS DE KPIs:")
+    print("\n📊 ESTADÍSTICOS DESCRIPTIVOS DE KPIs:")
     print(stats.round(2))
     
     return stats
@@ -46,7 +47,7 @@ def comparar_escenarios(df_empleados_todos):
         "kpi_contexto": "mean"
     }).round(2)
     
-    print("\nCOMPARACIÓN DE KPIs POR ESCENARIO:")
+    print("\n📊 COMPARACIÓN DE KPIs POR ESCENARIO:")
     print(comparacion)
     
     return comparacion
