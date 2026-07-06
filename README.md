@@ -1,4 +1,4 @@
-# 🧠 EBLET - People Analytics Framework
+# 🧠 EBLET - People Analytics Framework v2.0
 
 ## Framework de Referencia para el Bienestar Laboral y la Retención de Talento
 
@@ -10,32 +10,33 @@
 ## 🎯 Misión
 
 Desarrollar un framework de People Analytics que permita:
-- ✅ Evaluar el bienestar laboral mediante una encuesta estructurada (EBLET)
+- ✅ Evaluar el bienestar laboral mediante instrumentos validados (MBI-GS, EAL, WHO-5)
 - ✅ Calcular indicadores de burnout, boreout y bienestar
-- ✅ Generar automáticamente diagnósticos organizacionales
-- ✅ Facilitar la toma de decisiones en Recursos Humanos
+- ✅ Clasificar organizaciones en 5 escenarios de referencia
+- ✅ Cuantificar el **coste económico de la rotación**
+- ✅ Generar diagnósticos accionables para Recursos Humanos
 
 ---
 
 ## 📋 Alcance
 
 ### Entradas
-- **Encuesta EBLET**: 48 preguntas basadas en literatura científica
+- **Encuesta EBLET v2.0**: 64 preguntas basadas en literatura científica
 - **Datos demográficos y laborales** del empleado
 
 ### Procesamiento
-- Cálculo automático de KPIs (Burnout, Boreout, Bienestar, Rotación, Contexto)
-- Agregación por trabajador y por empresa
-- Comparación con escenarios de referencia
-- Segmentación por colectivos
-- Generación de visualizaciones
+- Cálculo automático de 5 KPIs (Burnout, Boreout, Bienestar, Rotación, Contexto)
+- Cálculo de costes de rotación por empleado (SHRM/Gallup)
+- Clasificación en 5 escenarios organizacionales (basado en CVF de Cameron & Quinn)
+- Análisis de ROI de intervenciones de bienestar
+- Generación de visualizaciones comparativas
 
 ### Salidas
-- Dataset estructurado
-- Indicadores cuantitativos
-- Dashboard interactivo
-- Informe automático
-- Recomendaciones de intervención
+- Datasets estructurados (12,500 empleados, 250 empresas)
+- Indicadores cuantitativos con base científica
+- Dashboard interactivo en Power BI
+- Informe científico con recomendaciones
+- Análisis de costes y ROI
 
 ---
 
@@ -45,11 +46,59 @@ El framework clasifica las organizaciones en 5 escenarios basados en la combinac
 
 | # | Escenario | Burnout | Boreout | Bienestar | Características |
 |---|-----------|---------|---------|-----------|-----------------|
-| 🟢 | **Saludable** | Bajo | Bajo | Alto | Organización óptima, alta retención |
+| 🟢 | **Saludable** | Bajo (<2.5) | Bajo (<2.5) | Alto (>3.5) | Organización óptima |
 | 🟡 | **Estable** | Moderado | Moderado | Medio | Funcional, margen de mejora |
-| 🟠 | **Riesgo Burnout** | Alto | Bajo | Bajo | Sobrecarga laboral |
-| 🔵 | **Riesgo Boreout** | Bajo | Alto | Bajo | Infraestimulación |
-| 🔴 | **Crítico** | Alto | Alto | Muy bajo | Desalineación organizativa extrema |
+| 🟠 | **Riesgo Burnout** | Alto (≥3.5) | Bajo (<2.5) | Bajo (<3.0) | Sobrecarga laboral |
+| 🔵 | **Riesgo Boreout** | Bajo (<2.5) | Alto (≥3.5) | Bajo (<3.0) | Infraestimulación |
+| 🔴 | **Crítico** | Alto (≥3.5) | Alto (≥3.5) | Muy bajo (<2.5) | Desalineación extrema |
+
+---
+
+## 📚 Bases Científicas
+
+### Instrumentos Validados
+
+| Instrumento | Dimensión | Referencia |
+|-------------|-----------|------------|
+| **MBI-GS** | Burnout | Schaufeli et al., 1996 |
+| **EAL** | Aburrimiento Laboral | Martínez-Lugo & Rodríguez-Montalbán, 2017 |
+| **WHO-5** | Bienestar | Topp et al., 2015 |
+| **CVF** | Cultura Organizacional | Cameron & Quinn, 2011 |
+| **JD-R** | Modelo General | Demerouti et al., 2001 |
+
+### Umbrales Científicos
+
+Los umbrales están calibrados con puntos de corte de instrumentos validados:
+- **Burnout alto**: ≥ 3.86 (Percentil 75 del MBI-GS)
+- **Boreout alto**: ≥ 3.00 (Umbral de la EAL)
+- **Bienestar bajo**: < 2.60 (Umbral clínico del WHO-5)
+
+---
+
+## 💰 Costes de Rotación
+
+El framework cuantifica el impacto económico del malestar laboral:
+
+### Metodología
+- Basada en **SHRM** (6-9 meses de salario por reemplazo)
+- Basada en **Gallup** (50%-200% del salario anual)
+- Basada en **Cobee/Pluxee** (metodología española)
+
+### Factores por Perfil
+
+| Seniority | Factor | Coste Estimado |
+|-----------|--------|----------------|
+| Junior | 50% salario | ~15,000€ |
+| Mid | 75% salario | ~30,000€ |
+| Senior | 100% salario | ~55,000€ |
+| Lead | 150% salario | ~110,000€ |
+
+### Resultados del Dataset Sintético
+
+- **Coste total de rotación**: ~357M€ anuales
+- **Coste medio por empleado**: ~28,600€
+- **% sobre masa salarial**: ~44%
+- **Ahorro potencial (30% reducción)**: ~107M€
 
 ---
 
@@ -59,15 +108,17 @@ El framework clasifica las organizaciones en 5 escenarios basados en la combinac
 EBLET-People-Analytics/
 │
 ├── src/                           # Código fuente
-│   ├── config.py                  # Configuración central (escenarios, umbrales)
+│   ├── config.py                  # Configuración central (CVF, umbrales)
 │   ├── empresas.py                # Generador de empresas sintéticas
-│   ├── empleados.py               # Generador de empleados con perfiles
+│   ├── empleados.py               # Generador de empleados
 │   ├── modelo_psicologico.py      # Modelo de estados latentes
-│   ├── encuesta.py                # Generador de respuestas a la encuesta
+│   ├── encuesta.py                # Generador de respuestas (64 preguntas)
 │   ├── scores.py                  # Calculadora de KPIs
+│   ├── costes_rotacion.py         # 💰 Módulo de costes (NUEVO)
 │   ├── exportador.py              # Exportador de datasets
-│   ├── utils.py                   # Utilidades generales
-│   └── generar_dataset.py         # Orquestador principal
+│   ├── exportar_para_powerbi.py   # Exportador para Power BI
+│   ├── generar_dataset.py         # Orquestador principal
+│   └── utils.py                   # Utilidades
 │
 ├── datasets/                      # Datos generados
 │   ├── saludable/                 # 2500 empleados
@@ -76,15 +127,28 @@ EBLET-People-Analytics/
 │   ├── riesgo_boreout/            # 2500 empleados
 │   └── critico/                   # 2500 empleados
 │
+├── powerbi_data/                  # Datos normalizados para Power BI
+│   ├── dim_empleados.csv
+│   ├── dim_empresas.csv
+│   ├── dim_encuesta.csv
+│   ├── fact_kpis.csv              # Con costes de rotación
+│   ├── costes_empresa.csv         # 💰 NUEVO
+│   ├── costes_escenario.csv       # 💰 NUEVO
+│   ├── recomendaciones_roi.csv    # 💰 NUEVO
+│   └── resumen_empresas.csv
+│
 ├── notebooks/                     # Análisis exploratorio
 │   ├── 01_EDA_comparativo.ipynb   # EDA + 6 gráficos comparativos
-│   ├── 02_Analisis_profundo.ipynb # Análisis inferencial y predictivo
-│   └── 03_Clustering.ipynb        # Identificación de perfiles
+│   ├── 02_Analisis_profundo.ipynb # ANOVA, fiabilidad, factorial
+│   ├── 03_Clustering.ipynb        # Identificación de perfiles
+│   └── 04_Analisis_Costes.ipynb   # 💰 Análisis económico (NUEVO)
 │
 ├── docs/                          # Documentación
-│   ├── metodologia.md             # Marco teórico
-│   ├── parametros_sintetizacion.md # Justificación de parámetros
-│   └── manual_tecnico.md          # Guía técnica
+│   ├── metodologia.md             # Marco teórico + CVF
+│   ├── parametros_sintetizacion.md # Justificación + costes
+│   ├── encuesta_eblet.md          # Encuesta completa
+│   ├── formulas_dax.md            # Fórmulas Power BI
+│   └── estructura_presentacion.md # Guía de defensa
 │
 ├── requirements.txt               # Dependencias Python
 └── README.md                      # Este archivo
@@ -101,7 +165,7 @@ git clone https://github.com/tu-usuario/EBLET-People-Analytics.git
 cd EBLET-People-Analytics
 ```
 
-### 2. Crear entorno virtual (recomendado)
+### 2. Crear entorno virtual
 
 ```bash
 # Windows
@@ -131,61 +195,72 @@ python src/generar_dataset.py
 
 Esto generará:
 - 5 escenarios × 50 empresas × 50 empleados = **12,500 empleados**
-- 5 carpetas en `datasets/` con CSVs estructurados
+- Cálculo de costes de rotación por empleado
+- Análisis de fiabilidad (Alfa de Cronbach)
+- Validación de clasificación de escenarios
+
+### Exportar para Power BI
+
+```bash
+python src/exportar_para_powerbi.py
+```
+
+Genera CSVs optimizados para importar en Power BI.
 
 ### Ejecutar análisis
 
 ```bash
-# Abrir Jupyter
 jupyter notebook
 
 # Ejecutar notebooks en orden:
 # 1. notebooks/01_EDA_comparativo.ipynb
 # 2. notebooks/02_Analisis_profundo.ipynb
 # 3. notebooks/03_Clustering.ipynb
+# 4. notebooks/04_Analisis_Costes.ipynb
 ```
 
 ---
 
 ## 🧪 Metodología
 
-### Instrumento de Medición: EBLET
+### Instrumento de Medición: EBLET v2.0
 
-La **Encuesta de Bienestar Laboral y Experiencia en el Trabajo (EBLET)** consta de 48 preguntas organizadas en 7 secciones:
+La encuesta consta de **64 preguntas Likert** organizadas en 7 secciones:
 
-1. **Información laboral** (11 preguntas demográficas)
+1. **Información laboral** (12 preguntas demográficas)
 2. **Hábitos saludables** (5 preguntas)
-3. **Organización del trabajo** (15 preguntas, Likert 1-5)
-4. **Burnout** (9 preguntas, basado en MBI-GS)
-5. **Boreout** (9 preguntas, basado en Rothlin & Werder)
-6. **Bienestar y Autoeficacia** (7 preguntas)
-7. **Intención de rotación** (3 preguntas)
+3. **Contexto organizacional** (15 preguntas, JD-R Model)
+4. **Burnout** (16 preguntas, **MBI-GS completo**)
+5. **Aburrimiento laboral** (8 preguntas, **EAL completo**)
+6. **Bienestar** (5 preguntas, **WHO-5 completo**)
+7. **Satisfacción + Autoeficacia** (7 preguntas)
+8. **Intención de rotación** (3 preguntas, Mobley)
+9. **Infraocupación** (5 preguntas, Rothlin & Werder)
 
-### Modelo Psicológico
+### Cultura Organizacional (CVF)
 
-Basado en:
-- **JD-R Model** (Demerouti et al., 2001)
-- **Maslach Burnout Inventory** (Maslach et al., 1981)
-- **Boreout Theory** (Rothlin & Werder, 2007)
-- **Teoría de Turnover** (Mobley, 1977)
+Basado en el **Competing Values Framework** de Cameron & Quinn (2011):
+
+- **Adhocracia** (Innovadora): Creatividad, riesgo, innovación
+- **Clan** (Colaborativa): Cohesión, mentoría, apoyo
+- **Jerárquica** (Tradicional): Procesos, estabilidad, control
+- **Mercado** (Exigente): Resultados, competitividad, logro
 
 ### Cálculo de KPIs
 
-Cada KPI se calcula como la media de las preguntas correspondientes:
-
 ```python
-KPI_Burnout = mean(q21:q29)
-KPI_Boreout = mean(q30:q38)
-KPI_Bienestar = mean(q39:q45)
-KPI_Rotacion = mean(q46:q48)
 KPI_Contexto = mean(q6:q20)
+KPI_Burnout = mean(q21:q36)  # MBI-GS completo (con inversión)
+KPI_Boreout = mean(q37:q44) + mean(q60:q64)  # EAL + Infraocupación
+KPI_Bienestar = mean(q45:q49) + mean(q50:q53)  # WHO-5 + Satisfacción
+KPI_Rotacion = mean(q57:q59)
 ```
 
 ---
 
 ## 📈 Visualizaciones
 
-El framework incluye 6 tipos de gráficos comparativos:
+### 6 Gráficos Comparativos
 
 1. **Radar Chart**: KPIs medios por escenario
 2. **Boxplots**: Distribución de Burnout y Boreout
@@ -194,28 +269,41 @@ El framework incluye 6 tipos de gráficos comparativos:
 5. **Scatter Plot**: Mapa de posicionamiento Burnout vs Boreout
 6. **Bar Chart Segmentado**: KPIs por colectivos
 
+### Dashboard Power BI
+
+- KPIs principales con formato condicional
+- Análisis de costes por escenario
+- Análisis de ROI de intervenciones
+- Drill-down por empresa, departamento, seniority
+
 ---
 
 ## 📚 Referencias Bibliográficas
 
-- Demerouti, E., et al. (2001). *The job demands-resources model of burnout*. Journal of Applied Psychology.
-- Maslach, C., et al. (1981). *Maslach Burnout Inventory*. Consulting Psychologists Press.
-- Rothlin, P., & Werder, G. (2007). *Boreout: Overcoming the Discontent of Underworked*. Redwheel/Weiser.
-- Mobley, W. H. (1977). *Intermediate linkages in the decision to leave an organization*. Organizational Behavior and Human Performance.
-- Schaufeli, W. B., et al. (1996). *Oldenburg Burnout Inventory*.
-- Bandura, A. (1997). *Self-efficacy: The exercise of control*. W.H. Freeman.
+Bakker, A. B., & Demerouti, E. (2007). The Job Demands-Resources model: State of the art. *Journal of Managerial Psychology, 22*(3), 309-328.
 
+Cameron, K. S., & Quinn, R. E. (2011). *Diagnosing and changing organizational culture: Based on the competing values framework* (3rd ed.). Jossey-Bass.
+
+Demerouti, E., et al. (2001). The job demands-resources model of burnout. *Journal of Applied Psychology, 86*(3), 499-512.
+
+Martínez-Lugo, I., & Rodríguez-Montalbán, J. (2017). Cuando el trabajo aburre: Análisis de las propiedades psicométricas de la EAL. *Revista Interamericana de Psicología*.
+
+Maslach, C., & Leiter, M. P. (2016). Understanding the burnout experience. *World Psychiatry, 15*(2), 103-111.
+
+Rothlin, P., & Werder, G. (2007). *Boreout: Overcoming the discontent of underworked*. Redwheel/Weiser.
+
+Schaufeli, W. B., et al. (1996). Maslach Burnout Inventory-General Survey. *MBI manual*.
+
+Topp, C. W., et al. (2015). The WHO-5 Well-Being Index: A systematic review. *Psychotherapy and Psychosomatics, 84*(3), 167-176.
 
 ---
 
-## 👥 Autores
+## 👥 Autora
 
-- **Marta Torrente** - *Proyecto Final Data Analyst* 
-
-
+- **Marta Torrente** - *Proyecto final Data Analyst* 
 
 
 
 
-
-
+**Versión:** 2.0  
+**Última actualización:** Julio 2026
