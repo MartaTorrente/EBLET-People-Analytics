@@ -70,10 +70,18 @@ def generar_empleados(empresas: pd.DataFrame, n_empleados: int = N_EMPLEADOS_DEF
         n_empleados
     )
     
-    df["seniority"] = np.where(
-        df["experiencia"] < 2, "Junior",
-        np.where(df["experiencia"] < 5, "Mid",
-        np.where(df["experiencia"] < 10, "Senior", "Lead"))
+   # Distribución realista del mercado laboral tech
+    SENIORITY_DIST = {
+        "Junior": 0.20,   # 20% - 2,500 empleados
+        "Mid": 0.45,      # 45% - 5,625 empleados (grueso)
+        "Senior": 0.25,   # 25% - 3,125 empleados
+        "Lead": 0.10      # 10% - 1,250 empleados
+    }
+
+    df["seniority"] = np.random.choice(
+        list(SENIORITY_DIST.keys()),
+        size=n_empleados,
+        p=list(SENIORITY_DIST.values())
     )
     
     df["modalidad"] = np.random.choice(

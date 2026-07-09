@@ -1,137 +1,141 @@
 """
-EBLET v2.0 - Generador de Respuestas a la Encuesta
+EBLET v2.0 - Generador de Respuestas a Encuesta
 
-Transforma estados psicológicos latentes en respuestas a las 64 preguntas
-de la encuesta EBLET v2.0, basada en instrumentos validados:
-- MBI-GS (Burnout)
-- EAL (Aburrimiento Laboral)
-- WHO-5 (Bienestar)
-- Rothlin & Werder (Infraocupación)
-- Bandura (Autoeficacia)
-- Mobley (Rotación)
+Genera respuestas a las 72 preguntas Likert de la encuesta EBLET v2.0
+a partir de los estados latentes calculados por el modelo psicológico.
+
+Instrumentos base:
+- MBI-GS (Schaufeli et al., 1996): Burnout (q16-q36)
+- EAL (Martínez-Lugo & Rodríguez-Montalbán, 2017): Aburrimiento (q37-q44)
+- WHO-5 (Topp et al., 2015): Bienestar (q45-q49)
+- Bandura (1997): Autoeficacia (q54-q56)
+- Mobley (1977): Rotación (q57-q59)
+- Rothlin & Werder (2007): Infraocupación (q60-q64)
+- Cameron & Quinn (2011): Cultura CVF (q65-q72)
+
+Versión 2.2: Acepta 1 argumento (df_empleados con columnas L_*)
 """
 
-import numpy as np
 import pandas as pd
+import numpy as np
 
-from config import PREGUNTAS, STD_RUIDO, STD_RUIDO_ALTO
+from config import (
+    STD_RUIDO,
+    STD_RUIDO_ALTO,
+    PREGUNTAS_CVF
+)
 
 
-def generar_respuestas_encuesta(df, latentes):
+def generar_respuestas_encuesta(df_empleados):
     """
-    Transforma estados psicológicos latentes en respuestas a la encuesta.
+    Genera respuestas a las 72 preguntas de la encuesta EBLET v2.0.
     
     Args:
-        df: DataFrame de empleados con variables organizacionales
-        latentes: Diccionario con arrays de estados psicológicos
-            - burnout: estado de burnout
-            - boreout: estado de boreout/aburrimiento
-            - wellbeing: estado de bienestar
+        df_empleados: DataFrame con metadata de empleados Y columnas
+                      L_burnout, L_boreout, L_wellbeing, L_rotation
     
     Returns:
-        DataFrame con 64 columnas (q1 a q64) con respuestas Likert 1-5
+        DataFrame con 72 columnas (q1 a q72)
     """
+    n = len(df_empleados)
+    todas_respuestas = pd.DataFrame(index=df_empleados.index)
     
-    n = len(df)
-    todas_respuestas = {}
+    # 🆕 Extraer estados latentes del DataFrame
+    L_burnout = df_empleados["L_burnout"].values
+    L_boreout = df_empleados["L_boreout"].values
+    L_wellbeing = df_empleados["L_wellbeing"].values
+    L_rotation = df_empleados["L_rotation"].values
     
     # =====================================================
     # SECCIÓN C: CONTEXTO ORGANIZACIONAL (q1-q15)
     # =====================================================
-    # Basado en JD-R Model (Demerouti et al., 2001)
-    
     for q in range(1, 16):
-        todas_respuestas[f'q{q}'] = np.clip(
-            np.random.normal(df["wellbeing_base"].values, 0.7, n),
-            1, 5
-        ).round().astype(int)
+        base = L_wellbeing * 0.6 + L_burnout * (-0.2) + L_boreout * (-0.2)
+        ruido = np.random.normal(0, STD_RUIDO, n)
+        todas_respuestas[f'q{q}'] = np.clip(base + ruido, 1, 5).round().astype(int)
     
     # =====================================================
-    # SECCIÓN D: BURNOUT - MBI-GS COMPLETO (q16-q36)
+    # SECCIÓN D: BURNOUT - MBI-GS (q16-q36)
     # =====================================================
     
-    # Dimensión 1: Agotamiento (q16-q22) - 7 ítems
+    # Dimensión 1: Agotamiento Emocional (q16-q22)
     for q in range(16, 23):
-        todas_respuestas[f'q{q}'] = np.clip(
-            latentes["burnout"] + np.random.normal(0, STD_RUIDO, n),
-            1, 5
-        ).round().astype(int)
+        ruido = np.random.normal(0, STD_RUIDO_ALTO, n)
+        todas_respuestas[f'q{q}'] = np.clip(L_burnout + ruido, 1, 5).round().astype(int)
     
-    # Dimensión 2: Cinismo (q23-q29) - 7 ítems
+    # Dimensión 2: Cinismo/Despersonalización (q23-q29)
     for q in range(23, 30):
-        todas_respuestas[f'q{q}'] = np.clip(
-            latentes["burnout"] * 0.95 + np.random.normal(0, STD_RUIDO, n),
-            1, 5
-        ).round().astype(int)
+        ruido = np.random.normal(0, STD_RUIDO_ALTO, n)
+        todas_respuestas[f'q{q}'] = np.clip(L_burnout * 0.9 + ruido, 1, 5).round().astype(int)
     
-    # Dimensión 3: Eficacia Profesional (q30-q36) - 7 ítems INVERTIDOS
-    # Estos ítems son positivos: alta eficacia = bajo burnout
+    # Dimensión 3: Eficacia Profesional INVERTIDA (q30-q36)
     for q in range(30, 37):
-        todas_respuestas[f'q{q}'] = np.clip(
-            (5 - latentes["burnout"]) * 0.9 + np.random.normal(0.5, STD_RUIDO_ALTO, n),
-            1, 5
-        ).round().astype(int)
+        ruido = np.random.normal(0, STD_RUIDO_ALTO, n)
+        todas_respuestas[f'q{q}'] = np.clip((6 - L_burnout) + ruido, 1, 5).round().astype(int)
     
     # =====================================================
-    # SECCIÓN E: ABURRIMIENTO LABORAL - EAL COMPLETO (q37-q44)
+    # SECCIÓN E: BOREOUT - EAL (q37-q44)
     # =====================================================
-    # Basado en Martínez-Lugo & Rodríguez-Montalbán (2017)
-    
     for q in range(37, 45):
-        todas_respuestas[f'q{q}'] = np.clip(
-            latentes["boreout"] + np.random.normal(0, STD_RUIDO, n),
-            1, 5
-        ).round().astype(int)
+        ruido = np.random.normal(0, STD_RUIDO_ALTO, n)
+        todas_respuestas[f'q{q}'] = np.clip(L_boreout + ruido, 1, 5).round().astype(int)
     
     # =====================================================
-    # SECCIÓN F: BIENESTAR - WHO-5 COMPLETO (q45-q49)
+    # SECCIÓN F: BIENESTAR - WHO-5 (q45-q49)
     # =====================================================
-    # Basado en Topp et al. (2015)
-    
     for q in range(45, 50):
-        todas_respuestas[f'q{q}'] = np.clip(
-            latentes["wellbeing"] + np.random.normal(0, STD_RUIDO, n),
-            1, 5
-        ).round().astype(int)
+        ruido = np.random.normal(0, STD_RUIDO, n)
+        todas_respuestas[f'q{q}'] = np.clip(L_wellbeing + ruido, 1, 5).round().astype(int)
     
     # =====================================================
     # SECCIÓN G: SATISFACCIÓN + AUTOEFICACIA (q50-q56)
     # =====================================================
     
-    # Satisfacción (q50-q53) - 4 ítems
+    # Satisfacción (q50-q53)
     for q in range(50, 54):
-        todas_respuestas[f'q{q}'] = np.clip(
-            latentes["wellbeing"] * 0.95 + np.random.normal(0.2, STD_RUIDO, n),
-            1, 5
-        ).round().astype(int)
+        ruido = np.random.normal(0, STD_RUIDO, n)
+        todas_respuestas[f'q{q}'] = np.clip(L_wellbeing * 0.9 + ruido, 1, 5).round().astype(int)
     
-    # Autoeficacia (q54-q56) - 3 ítems (Bandura, 1997)
+    # Autoeficacia (q54-q56)
     for q in range(54, 57):
-        todas_respuestas[f'q{q}'] = np.clip(
-            latentes["wellbeing"] * 0.7 + np.random.normal(1.2, STD_RUIDO_ALTO, n),
-            1, 5
-        ).round().astype(int)
+        ruido = np.random.normal(0, STD_RUIDO, n)
+        todas_respuestas[f'q{q}'] = np.clip(3.2 + ruido, 1, 5).round().astype(int)
     
     # =====================================================
-    # SECCIÓN H: INTENCIÓN DE ROTACIÓN (q57-q59)
+    # SECCIÓN H: ROTACIÓN - MOBLEY (q57-q59)
     # =====================================================
-    # Basado en Mobley (1977)
-    
     for q in range(57, 60):
-        todas_respuestas[f'q{q}'] = np.clip(
-            latentes["rotation"] + np.random.normal(0, STD_RUIDO, n),
-            1, 5
-        ).round().astype(int)
+        ruido = np.random.normal(0, STD_RUIDO, n)
+        todas_respuestas[f'q{q}'] = np.clip(L_rotation + ruido, 1, 5).round().astype(int)
     
     # =====================================================
-    # SECCIÓN I: INFRAOCUPACIÓN Y OCULTAMIENTO (q60-q64)
+    # SECCIÓN I: INFRAOCUPACIÓN - ROTHLIN (q60-q64)
     # =====================================================
-    # Basado en Rothlin & Werder (2007)
-    
     for q in range(60, 65):
-        todas_respuestas[f'q{q}'] = np.clip(
-            latentes["boreout"] * 0.9 + np.random.normal(0.3, STD_RUIDO_ALTO, n),
-            1, 5
-        ).round().astype(int)
+        ruido = np.random.normal(0, STD_RUIDO_ALTO, n)
+        todas_respuestas[f'q{q}'] = np.clip(L_boreout * 0.95 + ruido, 1, 5).round().astype(int)
     
-    return pd.DataFrame(todas_respuestas)
+    # =====================================================
+    # SECCIÓN J: CULTURA CVF (q65-q72)
+    # =====================================================
+    cultura_boost = {
+        "Adhocracia": {"Adhocracia": 2.0, "Clan": 0.0, "Mercado": 0.0, "Jerarquica": 0.0},
+        "Clan":       {"Adhocracia": 0.0, "Clan": 2.0, "Mercado": 0.0, "Jerarquica": 0.0},
+        "Mercado":    {"Adhocracia": 0.0, "Clan": 0.0, "Mercado": 2.0, "Jerarquica": 0.0},
+        "Jerarquica": {"Adhocracia": 0.0, "Clan": 0.0, "Mercado": 0.0, "Jerarquica": 2.0}
+    }
+    
+    base_cultura = 2.0
+    
+    for cultura, preguntas in PREGUNTAS_CVF.items():
+        for q in preguntas:
+            boost = df_empleados["cultura"].map(
+                lambda c, cult=cultura: cultura_boost.get(c, {}).get(cult, 0.0)
+            )
+            ruido = np.random.normal(0, 0.6, n)
+            todas_respuestas[f'q{q}'] = np.clip(
+                base_cultura + boost.values + ruido,
+                1, 5
+            ).round().astype(int)
+    
+    return todas_respuestas

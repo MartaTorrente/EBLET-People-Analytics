@@ -37,6 +37,10 @@ PREGUNTAS = {
     "autoeficacia":       {"rango": range(54, 57),  "n_items": 3},   # q54-q56
     "rotacion":           {"rango": range(57, 60),  "n_items": 3},   # q57-q59
     "infraocupacion":     {"rango": range(60, 65),  "n_items": 5},   # q60-q64
+    "cvf_adhocracia":  {"rango": range(65, 67), "n_items": 2},
+    "cvf_clan":        {"rango": range(67, 69), "n_items": 2},
+    "cvf_mercado":     {"rango": range(69, 71), "n_items": 2},
+    "cvf_jerarquica":  {"rango": range(71, 73), "n_items": 2},
 }
 
 # Total de preguntas Likert
@@ -196,9 +200,20 @@ N_EMPLEADOS_DEFAULT = 2500
 N_EMPRESAS_DEFAULT = 50
 
 # Desviaciones estándar para generación de respuestas
-STD_LATENTE = 0.5      # Variabilidad del estado psicológico latente
-STD_RUIDO = 0.3        # Ruido individual en respuestas
-STD_RUIDO_ALTO = 0.4   # Ruido para dimensiones más variables
+# Aumentados para reflejar variabilidad individual real
+
+STD_LATENTE = 0.5       # ← Reducido de 0.7 a 0.5
+STD_RUIDO = 0.3         # ← Reducido de 0.4 a 0.3
+STD_RUIDO_ALTO = 0.4    # ← Reducido de 0.5 a 0.4
+
+# Factores individuales (moderados)
+STD_RESILIENCIA = 0.2   # ← Reducido de 0.3 a 0.2
+STD_SENSIBILIDAD = 0.15 # ← Reducido de 0.25 a 0.15
+
+# Outliers naturales (3% en lugar de 5%)
+PORCENTAJE_OUTLIERS = 0.03  # ← Reducido de 0.05 a 0.03
+OUTLIER_BOOST = 1.0         # ← Reducido de 1.5 a 1.0
+OUTLIER_STD = 0.3           # ← Reducido de 0.5 a 0.3
 
 # =====================================================
 # 8. COSTES DE ROTACIÓN (SHRM/Gallup)
@@ -210,3 +225,20 @@ FACTORES_PERFIL = {
     "Senior": 1.00,      # 100% del salario anual
     "Lead": 1.50         # 150% del salario anual
 }
+
+# =====================================================
+# 9. PREGUNTAS CVF (q65-q72) - Percepción Cultural
+# =====================================================
+# Basado en OCAI de Cameron & Quinn (2011)
+# 8 preguntas: 2 por cada cultura del CVF
+
+PREGUNTAS_CVF = {
+    "Adhocracia": [65, 66],   # Innovación, creatividad
+    "Clan": [67, 68],         # Cohesión, familia
+    "Mercado": [69, 70],      # Resultados, competitividad
+    "Jerarquica": [71, 72]    # Procesos, estabilidad
+}
+
+# Total de preguntas con CVF
+N_PREGUNTAS_TOTAL = 72  # 64 Likert + 8 CVF
+

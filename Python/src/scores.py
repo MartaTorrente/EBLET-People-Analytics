@@ -4,6 +4,14 @@ EBLET v2.0 - Calculadora de KPIs
 Calcula indicadores a nivel empleado y empresa
 a partir de las respuestas a la encuesta v2.0.
 
+Instrumentos base:
+- MBI-GS (Schaufeli et al., 1996): Burnout
+- EAL (Martínez-Lugo & Rodríguez-Montalbán, 2017): Aburrimiento Laboral
+- WHO-5 (Topp et al., 2015): Bienestar
+- Rothlin & Werder (2007): Infraocupación
+- Mobley (1977): Intención de Rotación
+- Cameron & Quinn (2011): Cultura CVF (q65-q72)
+
 IMPORTANTE: Los ítems de Eficacia Profesional (q30-q36) del MBI-GS
 están redactados en positivo, por lo que deben INVERTIRSE para que
 un valor alto signifique más burnout.
@@ -20,12 +28,16 @@ def _obtener_columnas(rango):
     return [f'q{i}' for i in rango]
 
 
+# =====================================================
+# KPIs A NIVEL EMPLEADO
+# =====================================================
+
 def calcular_kpis_empleado(df_respuestas):
     """
     Calcula KPIs a nivel empleado a partir de las respuestas.
     
     Args:
-        df_respuestas: DataFrame con columnas q1 a q64
+        df_respuestas: DataFrame con columnas q1 a q72
     
     Returns:
         DataFrame con KPIs añadidos
@@ -79,12 +91,40 @@ def calcular_kpis_empleado(df_respuestas):
     df["bienestar_satisfaccion"] = satisfaccion
     df["bienestar_autoeficacia"] = df[_obtener_columnas(range(54, 57))].mean(axis=1)
     
+    # =====================================================
+    # 🆕 KPIs DE CULTURA CVF (q65-q72)
+    # =====================================================
+    # Solo si existen las columnas CVF
+    try:
+        from cultura_cvf import PREGUNTAS_CVF
+        
+        for cultura, info in PREGUNTAS_CVF.items():
+            preguntas = [f'q{p}' for p in info["preguntas"]]
+            # Verificar que las columnas existen
+            if all(p in df.columns for p in preguntas):
+                df[f"cvf_{cultura.lower()}"] = df[preguntas].mean(axis=1)
+        
+        # Cultura dominante individual
+        culturas = list(PREGUNTAS_CVF.keys())
+        cultura_cols = [f"cvf_{c.lower()}" for c in culturas]
+        cultura_cols_existentes = [c for c in cultura_cols if c in df.columns]
+        
+        if len(cultura_cols_existentes) == len(cultura_cols):
+            df["cultura_percibida"] = df[cultura_cols_existentes].idxmax(axis=1).str.replace("cvf_", "")
+    except ImportError:
+        # Si no existe cultura_cvf, continuar sin calcular cultura
+        pass
+    
     return df
 
 
+# =====================================================
+# KPIs A NIVEL EMPRESA
+# =====================================================
+
 def calcular_kpis_empresa(df_empleados):
     """
-    Agrega KPIs a nivel empresa.
+    Agrega KPIs a nivel empresa, incluyendo cultura percibida (si existe).
     """
     kpis_principales = [
         "kpi_burnout", "kpi_boreout", "kpi_bienestar",
@@ -98,63 +138,94 @@ def calcular_kpis_empresa(df_empleados):
     
     kpis_empresa.rename(columns={"empleado_id": "n_empleados"}, inplace=True)
     
-    # Redondear a 2 decimales
+    # Redondear KPIs
     for col in kpis_principales:
         kpis_empresa[col] = kpis_empresa[col].round(2)
     
+    # 🆕 Añadir cultura percibida por empresa (SOLO si existen las columnas CVF)
+    try:
+        from cultura_cvf import clasificar_cultura_empresa, PREGUNTAS_CVF
+        
+        # Verificar que todas las preguntas CVF existen en el DataFrame
+        todas_preguntas_cvf = []
+        for info in PREGUNTAS_CVF.values():
+            todas_preguntas_cvf.extend([f'q{p}' for p in info["preguntas"]])
+        
+        columnas_existentes = all(col in df_empleados.columns for col in todas_preguntas_cvf)
+        
+        if columnas_existentes:
+            culturas_percibidas = []
+            for empresa_id in kpis_empresa["empresa_id"]:
+                df_empresa = df_empleados[df_empleados["empresa_id"] == empresa_id]
+                resultado = clasificar_cultura_empresa(df_empresa)
+                culturas_percibidas.append(resultado["cultura_dominante"])
+            
+            kpis_empresa["cultura_percibida"] = culturas_percibidas
+        else:
+            print("   ⚠️ Columnas CVF (q65-q72) no encontradas. Saltando clasificación cultural.")
+    except (ImportError, KeyError) as e:
+        print(f"   ⚠️ No se pudo clasificar cultura: {e}")
+    
     return kpis_empresa
 
+
+# =====================================================
+# CLASIFICACIÓN DE ESCENARIOS
+# =====================================================
 
 def clasificar_escenario_empresa(df_kpis_empresa):
     """
     Clasifica cada empresa en uno de los 5 escenarios según sus KPIs.
     
-    Umbrales basados en:
-    - MBI-GS (Schaufeli et al., 1996): Burnout alto ≥ 3.86
-    - EAL (Martínez-Lugo, 2017): Aburrimiento alto ≥ 3.0
-    - WHO-5 (Topp et al., 2015): Bienestar bajo < 2.6
-    
-    Lógica corregida:
+    Lógica revisada (v2.1):
     - CRÍTICO: burnout ALTO + boreout ALTO + bienestar MUY BAJO
-    - RIESGO BURNOUT: burnout ALTO + boreout BAJO + bienestar BAJO
-    - RIESGO BOREOUT: burnout BAJO + boreout ALTO + bienestar BAJO
-    - SALUDABLE: burnout BAJO + boreout BAJO + bienestar ALTO
+    - RIESGO BURNOUT: burnout ALTO + boreout NO ALTO + bienestar BAJO
+    - RIESGO BOREOUT: burnout NO ALTO + boreout ALTO + bienestar BAJO
+    - SALUDABLE: ambos problemas bajos + bienestar ALTO
     - ESTABLE: todo lo demás
+    
+    Basado en literatura:
+    - MBI-GS: Burnout alto ≥ 3.5 (Schaufeli et al., 1996)
+    - EAL: Boreout alto ≥ 3.0 (Martínez-Lugo, 2017)
+    - WHO-5: Bienestar bajo < 2.6 (Topp et al., 2015)
     """
     df = df_kpis_empresa.copy()
     
     # Umbrales calibrados para clasificación robusta
-    BURNOUT_ALTO = 3.5      # Umbral para considerar burnout significativo
-    BURNOUT_BAJO = 2.5      # Umbral para considerar burnout bajo
-    BOREOUT_ALTO = 3.5      # Umbral para considerar boreout significativo
-    BOREOUT_BAJO = 2.5      # Umbral para considerar boreout bajo
-    BIENESTAR_ALTO = 3.5    # Umbral para considerar bienestar alto
-    BIENESTAR_BAJO = 2.5    # Umbral para considerar bienestar bajo
+    BURNOUT_ALTO = 3.5
+    BOREOUT_ALTO = 3.0
+    BIENESTAR_BAJO = 2.6
+    BIENESTAR_ALTO = 3.5
     
     def clasificar(row):
         burnout = row["kpi_burnout"]
         boreout = row["kpi_boreout"]
         bienestar = row["kpi_bienestar"]
         
-        # CRÍTICO: ambos problemas altos + bienestar muy bajo
+        # CRÍTICO
         if burnout >= BURNOUT_ALTO and boreout >= BOREOUT_ALTO and bienestar < BIENESTAR_BAJO:
             return "critico"
-        # RIESGO BURNOUT: burnout alto + boreout bajo + bienestar bajo
-        elif burnout >= BURNOUT_ALTO and boreout < BOREOUT_BAJO and bienestar < 3.0:
+        # RIESGO BURNOUT
+        elif burnout >= BURNOUT_ALTO and boreout < BOREOUT_ALTO and bienestar < 3.0:
             return "riesgo_burnout"
-        # RIESGO BOREOUT: burnout bajo + boreout alto + bienestar bajo
-        elif burnout < BURNOUT_BAJO and boreout >= BOREOUT_ALTO and bienestar < 3.0:
+        # RIESGO BOREOUT
+        elif burnout < BURNOUT_ALTO and boreout >= BOREOUT_ALTO and bienestar < 3.0:
             return "riesgo_boreout"
-        # SALUDABLE: ambos problemas bajos + bienestar alto
-        elif burnout < BURNOUT_BAJO and boreout < BOREOUT_BAJO and bienestar > BIENESTAR_ALTO:
+        # SALUDABLE
+        elif burnout < 2.5 and boreout < BOREOUT_ALTO and bienestar > BIENESTAR_ALTO:
             return "saludable"
-        # ESTABLE: todo lo demás
+        # ESTABLE
         else:
             return "estable"
     
     df["escenario_predicho"] = df.apply(clasificar, axis=1)
     
     return df
+
+
+# =====================================================
+# VALIDACIÓN DE CLASIFICACIÓN
+# =====================================================
 
 def validar_clasificacion(df_empresas_original, df_kpis_empresa):
     """
@@ -172,6 +243,10 @@ def validar_clasificacion(df_empresas_original, df_kpis_empresa):
     
     return df_validacion
 
+
+# =====================================================
+# ANÁLISIS DE FIABILIDAD (ALFA DE CRONBACH)
+# =====================================================
 
 def calcular_alfa_cronbach(df, items):
     """
@@ -216,6 +291,16 @@ def analisis_fiabilidad(df_empleados):
         "Contexto Organizacional (JD-R)": [f'q{i}' for i in range(1, 16)],
     }
     
+    # 🆕 Añadir dimensiones CVF si existen las columnas
+    try:
+        from cultura_cvf import PREGUNTAS_CVF
+        for cultura, info in PREGUNTAS_CVF.items():
+            preguntas = [f'q{p}' for p in info["preguntas"]]
+            if all(p in df_empleados.columns for p in preguntas):
+                dimensiones[f"Cultura CVF - {cultura}"] = preguntas
+    except ImportError:
+        pass
+    
     resultados = []
     for nombre, items in dimensiones.items():
         alpha = calcular_alfa_cronbach(df_empleados, items)
@@ -226,3 +311,35 @@ def analisis_fiabilidad(df_empleados):
         })
     
     return pd.DataFrame(resultados)
+
+
+# =====================================================
+# 🆕 KPIs DE CULTURA CVF (función independiente)
+# =====================================================
+
+def calcular_kpis_cultura(df):
+    """
+    Calcula los scores de cultura CVF a nivel empleado.
+    
+    Args:
+        df: DataFrame con columnas q65-q72
+    
+    Returns:
+        DataFrame con columnas cvf_adhocracia, cvf_clan, cvf_mercado, 
+        cvf_jerarquica y cultura_percibida añadidas
+    """
+    from cultura_cvf import PREGUNTAS_CVF
+    
+    df = df.copy()
+    
+    # Scores por cultura para cada empleado
+    for cultura, info in PREGUNTAS_CVF.items():
+        preguntas = [f'q{p}' for p in info["preguntas"]]
+        df[f"cvf_{cultura.lower()}"] = df[preguntas].mean(axis=1)
+    
+    # Cultura dominante individual
+    culturas = list(PREGUNTAS_CVF.keys())
+    cultura_cols = [f"cvf_{c.lower()}" for c in culturas]
+    df["cultura_percibida"] = df[cultura_cols].idxmax(axis=1).str.replace("cvf_", "")
+    
+    return df
