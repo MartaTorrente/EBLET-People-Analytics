@@ -50,7 +50,7 @@ def generar_respuestas_encuesta(df_empleados):
     # SECCIÓN C: CONTEXTO ORGANIZACIONAL (q1-q15)
     # =====================================================
     for q in range(1, 16):
-        base = L_wellbeing * 0.6 + L_burnout * (-0.2) + L_boreout * (-0.2)
+        base = 2.0 + L_wellbeing * 0.5 + L_burnout * (-0.15) + L_boreout * (-0.15)
         ruido = np.random.normal(0, STD_RUIDO, n)
         todas_respuestas[f'q{q}'] = np.clip(base + ruido, 1, 5).round().astype(int)
     
@@ -99,7 +99,8 @@ def generar_respuestas_encuesta(df_empleados):
     # Autoeficacia (q54-q56)
     for q in range(54, 57):
         ruido = np.random.normal(0, STD_RUIDO, n)
-        todas_respuestas[f'q{q}'] = np.clip(3.2 + ruido, 1, 5).round().astype(int)
+        base_autoeficacia = L_wellbeing * 0.7 + 1.5  # Correlación con bienestar
+        todas_respuestas[f'q{q}'] = np.clip(base_autoeficacia + ruido, 1, 5).round().astype(int)
     
     # =====================================================
     # SECCIÓN H: ROTACIÓN - MOBLEY (q57-q59)
