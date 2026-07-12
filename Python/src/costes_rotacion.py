@@ -1,5 +1,5 @@
 """
-EBLET v2.0 - Módulo de Costes de Rotación
+Módulo de Costes de Rotación
 
 Calcula el impacto económico de la rotación laboral basado en:
 - SHRM: coste de reemplazo = 6-9 meses de salario
@@ -18,9 +18,9 @@ import numpy as np
 from config import FACTORES_PERFIL
 
 
-# =====================================================
+
 # TASAS DE ROTACIÓN SEGÚN KPI
-# =====================================================
+
 
 def kpi_a_tasa_rotacion(kpi_rotacion):
     """
@@ -50,9 +50,9 @@ def tasa_rotacion_a_categoria(tasa):
         return "Crítica"
 
 
-# =====================================================
+
 # CÁLCULO INDIVIDUAL
-# =====================================================
+
 
 def calcular_coste_rotacion_empleado(row):
     """
@@ -80,9 +80,9 @@ def calcular_coste_rotacion_empleado(row):
     return round(coste_esperado, 2)
 
 
-# =====================================================
+
 # CÁLCULO AGREGADO POR EMPRESA
-# =====================================================
+
 
 def calcular_costes_empresa(df_empleados):
     """
@@ -137,9 +137,9 @@ def calcular_costes_empresa(df_empleados):
     return costes_empresa
 
 
-# =====================================================
+
 # CÁLCULO AGREGADO POR ESCENARIO
-# =====================================================
+
 
 def calcular_costes_escenario(df_empleados):
     """
@@ -178,9 +178,9 @@ def calcular_costes_escenario(df_empleados):
     return costes_escenario
 
 
-# =====================================================
+
 # ANÁLISIS DE ROI DE INTERVENCIÓN
-# =====================================================
+
 
 def calcular_roi_intervencion(coste_actual, coste_intervencion, porcentaje_reduccion):
     """
@@ -234,9 +234,9 @@ def generar_recomendaciones_roi(costes_empresa):
     return pd.DataFrame(recomendaciones)
 
 
-# =====================================================
+
 # RESUMEN EJECUTIVO
-# =====================================================
+
 
 def generar_resumen_ejecutivo(df_empleados):
     """
@@ -253,7 +253,7 @@ def generar_resumen_ejecutivo(df_empleados):
     return {
         "total_empleados": n_empleados,
         "total_empresas": n_empresas,
-        "coste_total_rotacion": round(costes_totales, 2),
+        "coste_total_rotación": round(costes_totales, 2),
         "coste_medio_por_empleado": round(costes_totales / n_empleados, 2),
         "masa_salarial_total": round(masa_salarial_total, 2),
         "coste_pct_masa_salarial": round((costes_totales / masa_salarial_total) * 100, 2),

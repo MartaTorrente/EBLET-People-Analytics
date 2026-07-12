@@ -7,11 +7,9 @@ Genera recomendaciones personalizadas para cada perfil.
 Incluye analisis de cultura organizacional percibida (CVF).
 Muestra posicion vs benchmark de 12,500 empleados.
 
-Cambio clave v2.1:
+Cambio clave:
 - "Rotacion" renombrado a "Intencion de cambio laboral"
-- Movido a "indicadores complementarios" (no protagonista)
-- Lenguaje mas prudente y psicologicamente adecuado
-- Recomendaciones personalizadas segun combinacion de indicadores
+
 
 Basado en literatura cientifica:
 - Maslach & Leiter (2016): Burnout y engagement
@@ -25,9 +23,9 @@ import pandas as pd
 import numpy as np
 
 
-# =====================================================
+
 # BENCHMARK DE REFERENCIA (percentiles)
-# =====================================================
+
 
 BENCHMARK_PERCENTILES = {
     "burnout": {"p25": 2.1, "p50": 2.8, "p75": 3.6, "media": 2.9},
@@ -36,9 +34,8 @@ BENCHMARK_PERCENTILES = {
 }
 
 
-# =====================================================
+
 # DEFINICION DE LOS 6 PERFILES
-# =====================================================
 
 PERFILES = {
     "flourishing": {
@@ -193,9 +190,9 @@ PERFILES = {
 }
 
 
-# =====================================================
+
 # FUNCIONES AUXILIARES
-# =====================================================
+
 
 def calcular_percentil(valor, kpi):
     """Calcula el percentil de un valor respecto al benchmark."""
@@ -299,9 +296,9 @@ def clasificar_dataframe(df_kpis):
     return df
 
 
-# =====================================================
+
 # GENERADOR DE INFORME INDIVIDUAL (v2.1)
-# =====================================================
+
 
 def generar_informe_individual(kpis, perfil_resultado, respuestas_raw=None):
     """
@@ -348,26 +345,26 @@ def generar_informe_individual(kpis, perfil_resultado, respuestas_raw=None):
         }
         return textos.get(int(round(valor)), "Sin respuesta")
     
-    # =====================================================
+  
     # 1. PERFIL DE BIENESTAR
-    # =====================================================
+    
     informe = f"""
-╔══════════════════════════════════════════════════════════════════════════════╗
-║  🎯 TU PERFIL DE BIENESTAR LABORAL
-╠══════════════════════════════════════════════════════════════════════════════╣
-║
-║                    {perfil['nombre']}
-║
-║  💬 {perfil['descripcion']}
-║
-╠══════════════════════════════════════════════════════════════════════════════╣
-║  📊 TUS INDICADORES PRINCIPALES
-║
+
+  🎯 TU PERFIL DE BIENESTAR LABORAL
+
+
+                    {perfil['nombre']}
+
+  💬 {perfil['descripcion']}
+
+
+  📊 TUS INDICADORES PRINCIPALES
+
 """
     
-    # =====================================================
+   
     # 2. INDICADORES PRINCIPALES (Burnout, Boreout, Bienestar)
-    # =====================================================
+   
     kpis_info = [
         ("🔥 Burnout", kpis['burnout'], 2.5, 3.5, False),
         ("😴 Boreout", kpis['boreout'], 2.5, 3.5, False),
@@ -382,13 +379,13 @@ def generar_informe_individual(kpis, perfil_resultado, respuestas_raw=None):
     
     informe += "║\n"
     
-    # =====================================================
+    
     # 3. CULTURA ORGANIZACIONAL PERCIBIDA
-    # =====================================================
+  
     if "cultura_scores" in kpis:
-        informe += "╠══════════════════════════════════════════════════════════════════════════════╣\n"
-        informe += "║  🏛️ CULTURA DE TU ORGANIZACIÓN (según tu percepción)\n"
-        informe += "║\n"
+        informe += "\n"
+        informe += "  🏛️ CULTURA DE TU ORGANIZACIÓN (según tu percepción)\n"
+        informe += "\n"
         
         cultura_emojis = {
             "Adhocracia": "🔵",
@@ -408,31 +405,31 @@ def generar_informe_individual(kpis, perfil_resultado, respuestas_raw=None):
             emoji = cultura_emojis.get(cultura, "⚪")
             barra_vis = barra_porcentaje(valor)
             es_dominante = "⭐" if cultura == kpis.get("cultura_dominante") else "  "
-            informe += f"║    {emoji} {cultura:12s}: {valor:.0f}/5 {barra_vis} {es_dominante}\n"
+            informe += f"    {emoji} {cultura:12s}: {valor:.0f}/5 {barra_vis} {es_dominante}\n"
         
-        informe += "║\n"
+        informe += "\n"
         
         cultura_dom = kpis.get("cultura_dominante", "Desconocida")
         desc_cultura = cultura_descripciones.get(cultura_dom, "")
-        informe += f"║    🎯 Cultura predominante: {cultura_dom.upper()}\n"
-        informe += f"║       ({desc_cultura})\n"
-        informe += "║\n"
+        informe += f"    🎯 Cultura predominante: {cultura_dom.upper()}\n"
+        informe += f"       ({desc_cultura})\n"
+        informe += "\n"
     
-    # =====================================================
+   
     # 4. INDICADORES COMPLEMENTARIOS
-    # =====================================================
-    informe += "╠══════════════════════════════════════════════════════════════════════════════╣\n"
-    informe += "║  🔗 INDICADORES COMPLEMENTARIOS\n"
-    informe += "║\n"
+ 
+    informe += "\n"
+    informe += "  🔗 INDICADORES COMPLEMENTARIOS\n"
+    informe += "\n"
     
     # Intención de cambio laboral (renombrado)
     intencion_cambio = kpis.get("rotacion", 3)
     nivel_cambio, emoji_cambio = nivel_intencion_cambio(intencion_cambio)
     barra_vis = barra_porcentaje(intencion_cambio)
     
-    informe += f"║    🔀 Intención de cambio laboral: {nivel_cambio} {emoji_cambio}\n"
-    informe += f"║                   {barra_vis}\n"
-    informe += "║\n"
+    informe += f"    🔀 Intención de cambio laboral: {nivel_cambio} {emoji_cambio}\n"
+    informe += f"                   {barra_vis}\n"
+    informe += "\n"
     
     # Compromiso con la organización (invertido de rotación)
     compromiso = 5 - intencion_cambio
@@ -446,11 +443,11 @@ def generar_informe_individual(kpis, perfil_resultado, respuestas_raw=None):
         nivel_compromiso = "Bajo"
         emoji_compromiso = "🔴"
     
-    informe += f"║    💼 Compromiso con la organización: {nivel_compromiso} {emoji_compromiso}\n"
-    informe += "║\n"
+    informe += f"    💼 Compromiso con la organización: {nivel_compromiso} {emoji_compromiso}\n"
+    informe += "\n"
     
     # Posición vs benchmark
-    informe += "║    📈 Tu posición respecto al benchmark (12,500 empleados):\n"
+    informe += "    📈 Tu posición respecto al benchmark (12,500 empleados):\n"
     for kpi in ["burnout", "boreout", "bienestar"]:
         percentil = percentiles.get(kpi, 50)
         nombre_kpi = {
@@ -459,22 +456,22 @@ def generar_informe_individual(kpis, perfil_resultado, respuestas_raw=None):
             "bienestar": "💚 Bienestar"
         }[kpi]
         nivel = nivel_texto(percentil)
-        informe += f"║       {nombre_kpi:12s}: Percentil {percentil:3d} ({nivel})\n"
+        informe += f"       {nombre_kpi:12s}: Percentil {percentil:3d} ({nivel})\n"
     
-    informe += "║\n"
+    informe += "\n"
     
-    # =====================================================
+
     # 5. RECOMENDACIONES PERSONALIZADAS
-    # =====================================================
-    informe += "╠══════════════════════════════════════════════════════════════════════════════╣\n"
-    informe += "║  🎯 RECOMENDACIONES PERSONALIZADAS\n"
-    informe += "║\n"
+  
+    informe += "\n"
+    informe += "  🎯 RECOMENDACIONES PERSONALIZADAS\n"
+    informe += "\n"
     
     # Recomendaciones base del perfil
     for i, consejo in enumerate(perfil["consejos"], 1):
-        informe += f"║    {i}. {consejo}\n"
+        informe += f"    {i}. {consejo}\n"
     
-    informe += "║\n"
+    informe += "\n"
     
     # 🆕 Recomendaciones adicionales según combinación con intención de cambio
     perfil_key = perfil["perfil"]
@@ -482,49 +479,49 @@ def generar_informe_individual(kpis, perfil_resultado, respuestas_raw=None):
     
     if perfil_key in ["quemado", "aburrido", "critico"]:
         if intencion >= 3.5:
-            informe += "║    💡 REFLEXIÓN ADICIONAL:\n"
-            informe += "║    Es posible que estés considerando un cambio de empleo. Antes de\n"
-            informe += "║    tomar una decisión, identifica qué aspectos concretos de tu\n"
-            informe += "║    trabajo están contribuyendo a esta situación y valora si podrían\n"
-            informe += "║    abordarse dentro de tu organización actual.\n"
+            informe += "    💡 REFLEXIÓN ADICIONAL:\n"
+            informe += "    Es posible que estés considerando un cambio de empleo. Antes de\n"
+            informe += "    tomar una decisión, identifica qué aspectos concretos de tu\n"
+            informe += "    trabajo están contribuyendo a esta situación y valora si podrían\n"
+            informe += "    abordarse dentro de tu organización actual.\n"
         elif intencion < 2.5:
-            informe += "║    💡 REFLEXIÓN ADICIONAL:\n"
-            informe += "║    Aunque actualmente no pareces plantearte un cambio de empleo,\n"
-            informe += "║    tus respuestas indican un nivel elevado de desgaste o\n"
-            informe += "║    desmotivación. Sería recomendable actuar antes de que esta\n"
-            informe += "║    situación se cronifique.\n"
+            informe += "    💡 REFLEXIÓN ADICIONAL:\n"
+            informe += "    Aunque actualmente no pareces plantearte un cambio de empleo,\n"
+            informe += "    tus respuestas indican un nivel elevado de desgaste o\n"
+            informe += "    desmotivación. Sería recomendable actuar antes de que esta\n"
+            informe += "    situación se cronifique.\n"
     
-    informe += "║\n"
+    informe += "\n"
     
     # Señal de alerta
-    informe += f"║  ⚠️  {perfil['senal_alerta']}\n"
-    informe += "║\n"
+    informe += f"  ⚠️  {perfil['senal_alerta']}\n"
+    informe += "\n"
     
     # Recursos
-    informe += "╠══════════════════════════════════════════════════════════════════════════════╣\n"
-    informe += "║  📚 RECURSOS RECOMENDADOS\n"
-    informe += "║\n"
+    informe += "\n"
+    informe += "  📚 RECURSOS RECOMENDADOS\n"
+    informe += "\n"
     
     for recurso in perfil["recursos"]:
-        informe += f"║    • {recurso}\n"
+        informe += f"    • {recurso}\n"
     
-    informe += """║
-╚══════════════════════════════════════════════════════════════════════════════╝
+    informe += """
+
 """
     
     return informe
 
 
-# =====================================================
+
 # EJECUCION DE PRUEBA
-# =====================================================
+
 
 if __name__ == "__main__":
     from encuesta_lite import calcular_kpis_lite
     
-    print("="*70)
-    print("🧪 TEST DEL CLASIFICADOR INDIVIDUAL v2.1")
-    print("="*70)
+
+    print("🧪 TEST DEL CLASIFICADOR INDIVIDUAL")
+
     
     # Caso 1: Persona aburrida con alta intencion de cambio
     print("\n🔵 CASO 1: Persona aburrida con alta intención de cambio")

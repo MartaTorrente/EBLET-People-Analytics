@@ -1,13 +1,9 @@
 """
-EBLET v2.0 - Modelo Psicológico
+Modelo Psicológico
 
 Calcula los estados latentes de burnout, boreout, bienestar y rotación
 a partir de los valores base del escenario y los efectos organizacionales.
 
-Versión 2.1: Incluye variabilidad individual realista
-- Factores individuales (resiliencia, sensibilidad)
-- Ruido organizacional aumentado
-- Outliers naturales (5% empleados atípicos)
 """
 
 import numpy as np
@@ -134,9 +130,9 @@ def construir_modelo_psicologico(df):
     """
     n = len(df)
     
-    # =====================================================
+   
     # 1. VALORES BASE DEL ESCENARIO
-    # =====================================================
+    
     # Cada empleado parte de los valores base de su escenario
     L_burnout = df["burnout_base"].values.copy().astype(float)
     L_boreout = df["boreout_base"].values.copy().astype(float)
@@ -147,16 +143,16 @@ def construir_modelo_psicologico(df):
     L_boreout += np.random.normal(0, STD_LATENTE, n)
     L_wellbeing += np.random.normal(0, STD_LATENTE, n)
     
-    # =====================================================
+ 
     # 2. EFECTOS ORGANIZACIONALES
-    # =====================================================
+   
     L_burnout, L_boreout, L_wellbeing = aplicar_efectos(
         df, L_burnout, L_boreout, L_wellbeing
     )
     
-    # =====================================================
+  
     # 3. FACTORES INDIVIDUALES (personalidad)
-    # =====================================================
+ 
     factor_resiliencia, factor_sensibilidad = añadir_factores_individuales(n)
     
     # La resiliencia reduce burnout y boreout, aumenta bienestar
@@ -164,36 +160,36 @@ def construir_modelo_psicologico(df):
     L_boreout = L_boreout - factor_resiliencia * 0.7 + factor_sensibilidad * 0.3
     L_wellbeing = L_wellbeing + factor_resiliencia * 0.5 - factor_sensibilidad * 0.4
     
-    # =====================================================
+   
     # 4. RUIDO INDIVIDUAL ADICIONAL
-    # =====================================================
+    
     L_burnout += np.random.normal(0, STD_RUIDO_ALTO, n)
     L_boreout += np.random.normal(0, STD_RUIDO_ALTO, n)
     L_wellbeing += np.random.normal(0, STD_RUIDO, n)
     
-    # =====================================================
+    
     # 5. OUTLIERS NATURALES (5% de empleados atípicos)
-    # =====================================================
+    
     L_burnout, L_boreout, L_wellbeing = añadir_outliers(
         n, L_burnout, L_boreout, L_wellbeing
     )
     
-    # =====================================================
+
     # 6. CLIPPING (valores entre 1 y 5)
-    # =====================================================
+   
     L_burnout = np.clip(L_burnout, 1.0, 5.0)
     L_boreout = np.clip(L_boreout, 1.0, 5.0)
     L_wellbeing = np.clip(L_wellbeing, 1.0, 5.0)
     
-    # =====================================================
+  
     # 7. CALCULAR ROTACIÓN
-    # =====================================================
+   
     L_rotation = calcular_rotacion(L_burnout, L_boreout, L_wellbeing, n)
     L_rotation = np.clip(L_rotation, 1.0, 5.0)
     
-    # =====================================================
+    
     # 8. GUARDAR EN DATAFRAME
-    # =====================================================
+    
     df["L_burnout"] = L_burnout
     df["L_boreout"] = L_boreout
     df["L_wellbeing"] = L_wellbeing

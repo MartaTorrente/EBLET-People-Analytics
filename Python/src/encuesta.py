@@ -1,19 +1,9 @@
 """
-EBLET v2.0 - Generador de Respuestas a Encuesta
+Generador de Respuestas a Encuesta
 
-Genera respuestas a las 72 preguntas Likert de la encuesta EBLET v2.0
+Genera respuestas a las 72 preguntas Likert de la encuesta EBLET
 a partir de los estados latentes calculados por el modelo psicológico.
 
-Instrumentos base:
-- MBI-GS (Schaufeli et al., 1996): Burnout (q16-q36)
-- EAL (Martínez-Lugo & Rodríguez-Montalbán, 2017): Aburrimiento (q37-q44)
-- WHO-5 (Topp et al., 2015): Bienestar (q45-q49)
-- Bandura (1997): Autoeficacia (q54-q56)
-- Mobley (1977): Rotación (q57-q59)
-- Rothlin & Werder (2007): Infraocupación (q60-q64)
-- Cameron & Quinn (2011): Cultura CVF (q65-q72)
-
-Versión 2.2: Acepta 1 argumento (df_empleados con columnas L_*)
 """
 
 import pandas as pd
@@ -28,7 +18,7 @@ from config import (
 
 def generar_respuestas_encuesta(df_empleados):
     """
-    Genera respuestas a las 72 preguntas de la encuesta EBLET v2.0.
+    Genera respuestas a las 72 preguntas de la encuesta EBLET.
     
     Args:
         df_empleados: DataFrame con metadata de empleados Y columnas
@@ -46,17 +36,17 @@ def generar_respuestas_encuesta(df_empleados):
     L_wellbeing = df_empleados["L_wellbeing"].values
     L_rotation = df_empleados["L_rotation"].values
     
-    # =====================================================
+ 
     # SECCIÓN C: CONTEXTO ORGANIZACIONAL (q1-q15)
-    # =====================================================
+   
     for q in range(1, 16):
         base = 2.0 + L_wellbeing * 0.5 + L_burnout * (-0.15) + L_boreout * (-0.15)
         ruido = np.random.normal(0, STD_RUIDO, n)
         todas_respuestas[f'q{q}'] = np.clip(base + ruido, 1, 5).round().astype(int)
     
-    # =====================================================
+ 
     # SECCIÓN D: BURNOUT - MBI-GS (q16-q36)
-    # =====================================================
+   
     
     # Dimensión 1: Agotamiento Emocional (q16-q22)
     for q in range(16, 23):
@@ -73,23 +63,23 @@ def generar_respuestas_encuesta(df_empleados):
         ruido = np.random.normal(0, STD_RUIDO_ALTO, n)
         todas_respuestas[f'q{q}'] = np.clip((6 - L_burnout) + ruido, 1, 5).round().astype(int)
     
-    # =====================================================
+    
     # SECCIÓN E: BOREOUT - EAL (q37-q44)
-    # =====================================================
+  
     for q in range(37, 45):
         ruido = np.random.normal(0, STD_RUIDO_ALTO, n)
         todas_respuestas[f'q{q}'] = np.clip(L_boreout + ruido, 1, 5).round().astype(int)
     
-    # =====================================================
+   
     # SECCIÓN F: BIENESTAR - WHO-5 (q45-q49)
-    # =====================================================
+   
     for q in range(45, 50):
         ruido = np.random.normal(0, STD_RUIDO, n)
         todas_respuestas[f'q{q}'] = np.clip(L_wellbeing + ruido, 1, 5).round().astype(int)
     
-    # =====================================================
+   
     # SECCIÓN G: SATISFACCIÓN + AUTOEFICACIA (q50-q56)
-    # =====================================================
+    
     
     # Satisfacción (q50-q53)
     for q in range(50, 54):
@@ -102,23 +92,23 @@ def generar_respuestas_encuesta(df_empleados):
         base_autoeficacia = L_wellbeing * 0.7 + 1.5  # Correlación con bienestar
         todas_respuestas[f'q{q}'] = np.clip(base_autoeficacia + ruido, 1, 5).round().astype(int)
     
-    # =====================================================
+
     # SECCIÓN H: ROTACIÓN - MOBLEY (q57-q59)
-    # =====================================================
+
     for q in range(57, 60):
         ruido = np.random.normal(0, STD_RUIDO, n)
         todas_respuestas[f'q{q}'] = np.clip(L_rotation + ruido, 1, 5).round().astype(int)
     
-    # =====================================================
+
     # SECCIÓN I: INFRAOCUPACIÓN - ROTHLIN (q60-q64)
-    # =====================================================
+
     for q in range(60, 65):
         ruido = np.random.normal(0, STD_RUIDO_ALTO, n)
         todas_respuestas[f'q{q}'] = np.clip(L_boreout * 0.95 + ruido, 1, 5).round().astype(int)
     
-    # =====================================================
+  
     # SECCIÓN J: CULTURA CVF (q65-q72)
-    # =====================================================
+  
     cultura_boost = {
         "Adhocracia": {"Adhocracia": 2.0, "Clan": 0.0, "Mercado": 0.0, "Jerarquica": 0.0},
         "Clan":       {"Adhocracia": 0.0, "Clan": 2.0, "Mercado": 0.0, "Jerarquica": 0.0},

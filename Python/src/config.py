@@ -1,28 +1,26 @@
+
 """
-EBLET v2.0 - People Analytics Framework
-Configuración Central del Sistema
+Módulo de configuración central del framework EBLET.
+===================================================
 
-Instrumentos validados:
-- MBI-GS (Schaufeli et al., 1996): Burnout
-- EAL (Martínez-Lugo & Rodríguez-Montalbán, 2017): Aburrimiento Laboral
-- WHO-5 (Topp et al., 2015): Bienestar
-- Rothlin & Werder (2007): Infraocupación
-- Bandura (1997): Autoeficacia
-- Mobley (1977): Intención de Rotación
+Centraliza todos los parámetros utilizados:
 
-Cultura organizacional:
-- Competing Values Framework (Cameron & Quinn, 2011)
-  - Adhocracia (Innovadora)
-  - Clan (Colaborativa)
-  - Jerarquica (Tradicional)
-  - Mercado (Exigente)
+- Estructura de la encuesta.
+- Dimensiones psicométricas.
+- Escenarios organizacionales.
+- Parámetros de simulación.
+- Umbrales de clasificación.
+- Efectos de cultura organizacional.
+- Costes de rotación.
+
+Modificar este archivo permite ajustar el comportamiento del framework
+sin alterar la lógica de los algoritmos.
+
 """
 
-import numpy as np
 
-# =====================================================
 # 1. ESTRUCTURA DE LA ENCUESTA (v2.0)
-# =====================================================
+
 
 # Rangos de preguntas por dimensión (numeración Likert 1-64)
 PREGUNTAS = {
@@ -46,21 +44,12 @@ PREGUNTAS = {
 # Total de preguntas Likert
 N_PREGUNTAS_LIKERT = 64
 
-# =====================================================
-# 2. ESCENARIOS ORGANIZACIONALES
-# =====================================================
-# Valores base calibrados con puntos de corte de instrumentos validados:
-# - MBI-GS: Burnout alto ≥ 3.86 (Schaufeli et al., 1996)
-# - EAL: Aburrimiento significativo ≥ 3.0 (Martínez-Lugo, 2017)
-# - WHO-5: Bienestar bajo < 2.6 (Topp et al., 2015)
 
-# =====================================================
+
 # 2. ESCENARIOS ORGANIZACIONALES
-# =====================================================
+
 # Valores base calibrados con puntos de corte de instrumentos validados:
-# - MBI-GS: Burnout alto ≥ 3.86 (Schaufeli et al., 1996)
-# - EAL: Aburrimiento significativo ≥ 3.0 (Martínez-Lugo, 2017)
-# - WHO-5: Bienestar bajo < 2.6 (Topp et al., 2015)
+
 
 SCENARIOS = {
     "saludable": {
@@ -89,8 +78,8 @@ SCENARIOS = {
     },
     "riesgo_burnout": {
         "burnout_base": 4.2,       # Alto burnout (por encima de 3.86)
-        "boreout_base": 1.7,       # ⬇️ AJUSTADO: bien por debajo del umbral 2.0
-        "wellbeing_base": 2.3,     # ⬇️ AJUSTADO: por debajo del umbral 3.0
+        "boreout_base": 1.7,       # AJUSTADO: bien por debajo del umbral 2.0
+        "wellbeing_base": 2.3,     # AJUSTADO: por debajo del umbral 3.0
         "rotation_base": 4.0,
         "culture_mix": {
             "Adhocracia": 0.10,
@@ -100,7 +89,7 @@ SCENARIOS = {
         }
     },
         "riesgo_boreout": {
-        "burnout_base": 1.5,       # ⬇️ AJUSTADO: de 1.8 a 1.5 para compensar efectos
+        "burnout_base": 1.5,       # AJUSTADO: de 1.8 a 1.5 
         "boreout_base": 4.3,       # Alto boreout (por encima de 3.0)
         "wellbeing_base": 2.3,     # Por debajo del umbral 3.0
         "rotation_base": 3.8,
@@ -125,9 +114,9 @@ SCENARIOS = {
         }
     }
 }
-# =====================================================
+
 # 3. EFECTOS DE CULTURA ORGANIZACIONAL (CVF - Cameron & Quinn)
-# =====================================================
+
 # Basado en el Competing Values Framework:
 # - Adhocracia: Externo + Flexible → Innovación, creatividad
 # - Clan: Interno + Flexible → Cohesión, apoyo
@@ -148,9 +137,9 @@ CULTURE_EFFECTS = {
     "Mercado":     {"burnout": +0.35, "boreout": -0.05, "wellbeing": -0.35}
 }
 
-# =====================================================
+#
 # 4. EFECTOS DE MODALIDAD DE TRABAJO
-# =====================================================
+
 # Basado en estudios post-pandemia (Bloom, 2022; Oakman et al., 2020)
 
 MODALITY_EFFECTS = {
@@ -159,9 +148,9 @@ MODALITY_EFFECTS = {
     "Remoto":     {"burnout": -0.10, "boreout": +0.20, "wellbeing": +0.05}
 }
 
-# =====================================================
+
 # 5. EFECTOS DE DEPARTAMENTO
-# =====================================================
+
 
 DEPARTMENT_EFFECTS = {
     "Desarrollo": {"burnout": +0.20, "boreout": -0.10},
@@ -171,9 +160,9 @@ DEPARTMENT_EFFECTS = {
     "Ventas":     {"burnout": +0.30, "boreout": -0.15}
 }
 
-# =====================================================
+
 # 6. UMBRALES DE CLASIFICACIÓN (basados en literatura)
-# =====================================================
+
 
 UMBRALES = {
     # Umbrales MBI-GS convertidos a escala 1-5
@@ -189,9 +178,8 @@ UMBRALES = {
     "bienestar_bajo": 2.60,  # Riesgo de depresión (Topp et al., 2015)
 }
 
-# =====================================================
 # 7. PARÁMETROS DE GENERACIÓN
-# =====================================================
+
 
 LIKERT_MIN = 1
 LIKERT_MAX = 5
@@ -202,22 +190,22 @@ N_EMPRESAS_DEFAULT = 50
 # Desviaciones estándar para generación de respuestas
 # Aumentados para reflejar variabilidad individual real
 
-STD_LATENTE = 0.5       # ← Reducido de 0.7 a 0.5
-STD_RUIDO = 0.3         # ← Reducido de 0.4 a 0.3
-STD_RUIDO_ALTO = 0.4    # ← Reducido de 0.5 a 0.4
+STD_LATENTE = 0.5       # Reducido de 0.7 a 0.5
+STD_RUIDO = 0.3         # Reducido de 0.4 a 0.3
+STD_RUIDO_ALTO = 0.4    # Reducido de 0.5 a 0.4
 
 # Factores individuales (moderados)
 STD_RESILIENCIA = 0.2   # ← Reducido de 0.3 a 0.2
 STD_SENSIBILIDAD = 0.15 # ← Reducido de 0.25 a 0.15
 
 # Outliers naturales (3% en lugar de 5%)
-PORCENTAJE_OUTLIERS = 0.03  # ← Reducido de 0.05 a 0.03
-OUTLIER_BOOST = 1.0         # ← Reducido de 1.5 a 1.0
-OUTLIER_STD = 0.3           # ← Reducido de 0.5 a 0.3
+PORCENTAJE_OUTLIERS = 0.03  # Reducido de 0.05 a 0.03
+OUTLIER_BOOST = 1.0         # Reducido de 1.5 a 1.0
+OUTLIER_STD = 0.3           # Reducido de 0.5 a 0.3
 
-# =====================================================
+
 # 8. COSTES DE ROTACIÓN (SHRM/Gallup)
-# =====================================================
+
 
 FACTORES_PERFIL = {
     "Junior": 0.50,      # 50% del salario anual
@@ -226,10 +214,8 @@ FACTORES_PERFIL = {
     "Lead": 1.50         # 150% del salario anual
 }
 
-# =====================================================
 # 9. PREGUNTAS CVF (q65-q72) - Percepción Cultural
-# =====================================================
-# Basado en OCAI de Cameron & Quinn (2011)
+
 # 8 preguntas: 2 por cada cultura del CVF
 
 PREGUNTAS_CVF = {

@@ -1,17 +1,17 @@
 """
-EBLET v2.0 - Exportador de Datasets
+Exportador de Datasets
 
 Exporta los datasets generados a CSV en la estructura de carpetas por escenario.
 """
 
 import pandas as pd
-import os
 from pathlib import Path
+from config import SCENARIOS
 
 
 def crear_directorios():
     """Crea los directorios necesarios para los datasets."""
-    from config import SCENARIOS
+ 
     
     Path("datasets").mkdir(exist_ok=True)
     

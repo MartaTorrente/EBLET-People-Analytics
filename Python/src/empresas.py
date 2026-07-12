@@ -1,8 +1,7 @@
 """
-EBLET v2.0 - Generador de Empresas Sintéticas
+Generador de Empresas Sintéticas
 
-Genera empresas coherentes con los escenarios organizacionales,
-usando la clasificación de culturas según Cameron & Quinn (CVF).
+Genera empresas coherentes con los escenarios organizacionales  
 """
 
 import pandas as pd
@@ -25,7 +24,7 @@ def generar_empresas(escenario: str, n_empresas: int = N_EMPRESAS_DEFAULT):
     
     cfg = SCENARIOS[escenario]
     
-    # Generar metadata básica
+   
     empresas = pd.DataFrame({
         "empresa_id": [f"{escenario[:3].upper()}_{i:03d}" for i in range(n_empresas)],
         "nombre": [f"{escenario}_Corp_{i}" for i in range(n_empresas)],
@@ -33,10 +32,7 @@ def generar_empresas(escenario: str, n_empresas: int = N_EMPRESAS_DEFAULT):
             ["Madrid", "Barcelona", "Bilbao", "Valencia", "Sevilla"],
             n_empresas
         ),
-        "sector": np.random.choice(
-            ["Tecnología", "Finanzas", "Salud", "Educación", "Retail"],
-            n_empresas
-        ),
+        "sector": ["Tecnología"] * n_empresas,  
         "tamano": np.random.choice(
             ["Micro", "Pequeña", "Mediana", "Grande"],
             n_empresas,
@@ -44,9 +40,9 @@ def generar_empresas(escenario: str, n_empresas: int = N_EMPRESAS_DEFAULT):
         )
     })
     
-    # =====================================================
+  
     # ASIGNACIÓN DE CULTURA SEGÚN CVF (Cameron & Quinn)
-    # =====================================================
+  
     
     culturas = list(cfg["culture_mix"].keys())
     probs = list(cfg["culture_mix"].values())
@@ -57,9 +53,9 @@ def generar_empresas(escenario: str, n_empresas: int = N_EMPRESAS_DEFAULT):
         p=probs
     )
     
-    # =====================================================
-    # METADATA DEL ESCENARIO
-    # =====================================================
+    
+    # Información del escenario utilizada para generar cada empresa
+    
     
     empresas["escenario"] = escenario
     empresas["burnout_base"] = cfg["burnout_base"]

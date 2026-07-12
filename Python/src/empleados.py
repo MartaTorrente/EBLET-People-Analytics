@@ -1,8 +1,8 @@
 """
-EBLET v2.0 - Generador de Empleados Sintéticos
+Generador de Empleados Sintéticos
 
-Genera perfiles demográficos y organizacionales realistas
-para los empleados de las empresas sintéticas.
+Genera empleados sintéticos asignados a las empresas previamente creadas.
+
 """
 
 import pandas as pd
@@ -18,9 +18,9 @@ def generar_empleados(empresas: pd.DataFrame, n_empleados: int = N_EMPLEADOS_DEF
     
     n_empresas = len(empresas)
     
-    # =====================================================
+
     # 1. ASIGNACIÓN EMPLEADO → EMPRESA
-    # =====================================================
+   
     
     empresa_asignada = np.random.choice(
         empresas["empresa_id"],
@@ -32,15 +32,15 @@ def generar_empleados(empresas: pd.DataFrame, n_empleados: int = N_EMPLEADOS_DEF
         "empresa_id": empresa_asignada
     })
     
-    # =====================================================
-    # 2. JOIN CON EMPRESA (CONTEXTO ORGANIZACIONAL)
-    # =====================================================
+   
+    # 2. JOIN CON EMPRESA (CONTEXTO ORGANIZACIONAL) el empleado hereda el contexto organizacional de su empresa
+  
     
     df = df.merge(empresas, on="empresa_id", how="left")
     
-    # =====================================================
+    
     # 3. VARIABLES SOCIODEMOGRÁFICAS
-    # =====================================================
+   
     
     # Edad (distribución laboral realista)
     df["edad"] = np.random.normal(34, 8, n_empleados).clip(22, 60).astype(int)
@@ -61,9 +61,9 @@ def generar_empleados(empresas: pd.DataFrame, n_empleados: int = N_EMPLEADOS_DEF
         df["experiencia"] * np.random.uniform(0.2, estabilidad_factor)
     ).clip(0).round(1)
     
-    # =====================================================
+    
     # 4. VARIABLES ORGANIZACIONALES
-    # =====================================================
+  
     
     df["departamento"] = np.random.choice(
         ["Desarrollo", "Datos", "Producto", "RRHH", "Ventas"],
@@ -96,9 +96,9 @@ def generar_empleados(empresas: pd.DataFrame, n_empleados: int = N_EMPLEADOS_DEF
         p=[0.55, 0.40, 0.05]
     )
     
-    # =====================================================
+   
     # 5. SALARIO (COHERENTE CON SENIORITY)
-    # =====================================================
+   
     
     def salario(seniority):
         rangos = {
@@ -113,9 +113,9 @@ def generar_empleados(empresas: pd.DataFrame, n_empleados: int = N_EMPLEADOS_DEF
     
     df["salario"] = df["seniority"].apply(salario)
     
-    # =====================================================
+
     # 6. FEATURE ENGINEERING BASE
-    # =====================================================
+ 
     
     df["empresa_size"] = df["tamano"]
     df["sector"] = df["sector"]

@@ -1,16 +1,8 @@
 """
-EBLET v2.0 - Calculadora de KPIs
+Calculadora de KPIs
 
 Calcula indicadores a nivel empleado y empresa
-a partir de las respuestas a la encuesta v2.0.
-
-Instrumentos base:
-- MBI-GS (Schaufeli et al., 1996): Burnout
-- EAL (Martínez-Lugo & Rodríguez-Montalbán, 2017): Aburrimiento Laboral
-- WHO-5 (Topp et al., 2015): Bienestar
-- Rothlin & Werder (2007): Infraocupación
-- Mobley (1977): Intención de Rotación
-- Cameron & Quinn (2011): Cultura CVF (q65-q72)
+a partir de las respuestas a la encuesta.
 
 IMPORTANTE: Los ítems de Eficacia Profesional (q30-q36) del MBI-GS
 están redactados en positivo, por lo que deben INVERTIRSE para que
@@ -21,6 +13,7 @@ import pandas as pd
 import numpy as np
 
 from config import PREGUNTAS, UMBRALES
+from cultura_cvf import clasificar_cultura_empresa, PREGUNTAS_CVF
 
 
 def _obtener_columnas(rango):
@@ -28,9 +21,8 @@ def _obtener_columnas(rango):
     return [f'q{i}' for i in rango]
 
 
-# =====================================================
+
 # KPIs A NIVEL EMPLEADO
-# =====================================================
 
 def calcular_kpis_empleado(df_respuestas):
     """
@@ -44,9 +36,9 @@ def calcular_kpis_empleado(df_respuestas):
     """
     df = df_respuestas.copy()
     
-    # =====================================================
+    
     # KPIs PRINCIPALES
-    # =====================================================
+    
     
     # KPI Contexto: Media de q1-q15
     df["kpi_contexto"] = df[_obtener_columnas(range(1, 16))].mean(axis=1)
@@ -73,9 +65,9 @@ def calcular_kpis_empleado(df_respuestas):
     # KPI Rotación: Media de q57-q59
     df["kpi_rotacion"] = df[_obtener_columnas(range(57, 60))].mean(axis=1)
     
-    # =====================================================
+   
     # SUB-DIMENSIONES (para análisis detallado)
-    # =====================================================
+   
     
     # Burnout - Sub-dimensiones MBI-GS
     df["burnout_agotamiento"] = burnout_agotam
@@ -91,13 +83,12 @@ def calcular_kpis_empleado(df_respuestas):
     df["bienestar_satisfaccion"] = satisfaccion
     df["bienestar_autoeficacia"] = df[_obtener_columnas(range(54, 57))].mean(axis=1)
     
-    # =====================================================
+  
     # 🆕 KPIs DE CULTURA CVF (q65-q72)
-    # =====================================================
+   
     # Solo si existen las columnas CVF
     try:
-        from cultura_cvf import PREGUNTAS_CVF
-        
+                
         for cultura, info in PREGUNTAS_CVF.items():
             preguntas = [f'q{p}' for p in info["preguntas"]]
             # Verificar que las columnas existen
@@ -118,9 +109,9 @@ def calcular_kpis_empleado(df_respuestas):
     return df
 
 
-# =====================================================
+
 # KPIs A NIVEL EMPRESA
-# =====================================================
+
 
 def calcular_kpis_empresa(df_empleados):
     """
@@ -144,7 +135,7 @@ def calcular_kpis_empresa(df_empleados):
     
     # 🆕 Añadir cultura percibida por empresa (SOLO si existen las columnas CVF)
     try:
-        from cultura_cvf import clasificar_cultura_empresa, PREGUNTAS_CVF
+        
         
         # Verificar que todas las preguntas CVF existen en el DataFrame
         todas_preguntas_cvf = []
@@ -169,25 +160,21 @@ def calcular_kpis_empresa(df_empleados):
     return kpis_empresa
 
 
-# =====================================================
+
 # CLASIFICACIÓN DE ESCENARIOS
-# =====================================================
+
 
 def clasificar_escenario_empresa(df_kpis_empresa):
     """
     Clasifica cada empresa en uno de los 5 escenarios según sus KPIs.
     
-    Lógica revisada (v2.1):
+    Lógica:
     - CRÍTICO: burnout ALTO + boreout ALTO + bienestar MUY BAJO
     - RIESGO BURNOUT: burnout ALTO + boreout NO ALTO + bienestar BAJO
     - RIESGO BOREOUT: burnout NO ALTO + boreout ALTO + bienestar BAJO
     - SALUDABLE: ambos problemas bajos + bienestar ALTO
     - ESTABLE: todo lo demás
     
-    Basado en literatura:
-    - MBI-GS: Burnout alto ≥ 3.5 (Schaufeli et al., 1996)
-    - EAL: Boreout alto ≥ 3.0 (Martínez-Lugo, 2017)
-    - WHO-5: Bienestar bajo < 2.6 (Topp et al., 2015)
     """
     df = df_kpis_empresa.copy()
     
@@ -223,9 +210,9 @@ def clasificar_escenario_empresa(df_kpis_empresa):
     return df
 
 
-# =====================================================
+
 # VALIDACIÓN DE CLASIFICACIÓN
-# =====================================================
+
 
 def validar_clasificacion(df_empresas_original, df_kpis_empresa):
     """
@@ -244,9 +231,9 @@ def validar_clasificacion(df_empresas_original, df_kpis_empresa):
     return df_validacion
 
 
-# =====================================================
+
 # ANÁLISIS DE FIABILIDAD (ALFA DE CRONBACH)
-# =====================================================
+
 
 def calcular_alfa_cronbach(df, items):
     """
@@ -293,7 +280,7 @@ def analisis_fiabilidad(df_empleados):
     
     # 🆕 Añadir dimensiones CVF si existen las columnas
     try:
-        from cultura_cvf import PREGUNTAS_CVF
+        
         for cultura, info in PREGUNTAS_CVF.items():
             preguntas = [f'q{p}' for p in info["preguntas"]]
             if all(p in df_empleados.columns for p in preguntas):
@@ -313,9 +300,9 @@ def analisis_fiabilidad(df_empleados):
     return pd.DataFrame(resultados)
 
 
-# =====================================================
+
 # 🆕 KPIs DE CULTURA CVF (función independiente)
-# =====================================================
+
 
 def calcular_kpis_cultura(df):
     """
@@ -328,7 +315,7 @@ def calcular_kpis_cultura(df):
         DataFrame con columnas cvf_adhocracia, cvf_clan, cvf_mercado, 
         cvf_jerarquica y cultura_percibida añadidas
     """
-    from cultura_cvf import PREGUNTAS_CVF
+
     
     df = df.copy()
     

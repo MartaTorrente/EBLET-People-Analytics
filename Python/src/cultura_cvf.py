@@ -1,19 +1,20 @@
 """
-EBLET v2.0 - Clasificador de Cultura Organizacional (CVF)
-
-Basado en el Competing Values Framework de Cameron & Quinn (2011)
-y el instrumento OCAI (Organizational Culture Assessment Instrument).
+Clasificador de Cultura Organizacional (CVF)
 
 Clasifica la cultura según la PERCEPCIÓN de los empleados,
 no según una declaración corporativa.
+
+Este módulo implementa el Competing Values Framework (CVF)
+para clasificar la cultura organizacional percibida a partir
+de las respuestas q65-q72.
 """
 
 import numpy as np
 import pandas as pd
+from config import CULTURE_EFFECTS
 
-# =====================================================
 # PREGUNTAS CVF (q65-q72)
-# =====================================================
+
 
 PREGUNTAS_CVF = {
     "Adhocracia": {
@@ -46,18 +47,12 @@ COLORES_CVF = {
     "Jerarquica": "#f1c40f"    # Amarillo
 }
 
-# Efectos sobre bienestar (ya existentes en config.py, aquí para referencia)
-EFECTOS_CVF = {
-    "Adhocracia":  {"burnout": -0.15, "boreout": -0.10, "wellbeing": +0.20},
-    "Clan":        {"burnout": -0.25, "boreout": -0.10, "wellbeing": +0.30},
-    "Jerarquica":  {"burnout": +0.15, "boreout": +0.10, "wellbeing": -0.15},
-    "Mercado":     {"burnout": +0.35, "boreout": -0.05, "wellbeing": -0.35}
-}
 
 
-# =====================================================
+
+
 # CLASIFICADOR INDIVIDUAL
-# =====================================================
+
 
 def calcular_scores_cvf_individuo(row):
     """
@@ -88,7 +83,7 @@ def clasificar_cultura_individual(scores):
     """
     cultura_dominante = max(scores, key=scores.get)
     total = sum(scores.values())
-    confianza = scores[cultura_dominante] / total if total > 0 else 0
+    confianza = scores[cultura_dominante] / total if total > 0 else 0  # Índice simple de predominio de la cultura ganadora. No representa una probabilidad estadística.
     
     return {
         "cultura_dominante": cultura_dominante,
@@ -97,9 +92,8 @@ def clasificar_cultura_individual(scores):
     }
 
 
-# =====================================================
 # CLASIFICADOR ORGANIZACIONAL (agregado)
-# =====================================================
+
 
 def clasificar_cultura_empresa(df_empleados):
     """
@@ -137,9 +131,9 @@ def clasificar_cultura_empresa(df_empleados):
     }
 
 
-# =====================================================
+
 # GENERADOR DE CULTURA PARA BENCHMARK
-# =====================================================
+
 
 def generar_cultura_percibida(n_empleados, cultura_real, seed=None):
     """
@@ -185,9 +179,9 @@ def generar_cultura_percibida(n_empleados, cultura_real, seed=None):
     return respuestas
 
 
-# =====================================================
+
 # VALIDADOR DE CONSISTENCIA
-# =====================================================
+
 
 def validar_clasificacion_cultura(df_empleados, cultura_esperada):
     """
@@ -204,9 +198,9 @@ def validar_clasificacion_cultura(df_empleados, cultura_esperada):
     return resultado["cultura_dominante"] == cultura_esperada
 
 
-# =====================================================
+
 # RESUMEN EJECUTIVO
-# =====================================================
+
 
 def generar_informe_cultura(resultado_clasificacion):
     """

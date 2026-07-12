@@ -1,5 +1,5 @@
 """
-EBLET v2.0 - Generador de Datasets
+Generador de Datasets
 
 Orquestador principal que genera los datasets sintéticos para los 5 escenarios
 organizacionales del framework EBLET.
@@ -53,23 +53,23 @@ def generar_dataset_escenario(escenario, n_empresas=50, n_empleados=2500, seed=4
     
     np.random.seed(seed)
     
-    # =====================================================
+
     # PASO 1: GENERAR EMPRESAS
-    # =====================================================
+   
     print(f"\n📋 Paso 1: Generando {n_empresas} empresas...")
     df_empresas = generar_empresas(escenario, n_empresas)
     print(f"   ✅ {n_empresas} empresas generadas")
     
-    # =====================================================
+    
     # PASO 2: GENERAR EMPLEADOS
-    # =====================================================
+   
     print(f"\n👥 Paso 2: Generando {n_empleados} empleados...")
     df_empleados = generar_empleados(df_empresas, n_empleados)
     print(f"   ✅ {n_empleados} empleados generados")
     
-    # =====================================================
+
     # PASO 3: APLICAR MODELO PSICOLÓGICO
-    # =====================================================
+    
     print(f"\n🧠 Paso 3: Aplicando modelo psicológico...")
     df_empleados = construir_modelo_psicologico(df_empleados)
     
@@ -83,9 +83,9 @@ def generar_dataset_escenario(escenario, n_empresas=50, n_empleados=2500, seed=4
         print(f"      - Resiliencia media: {df_empleados['factor_resiliencia'].mean():.3f}")
         print(f"      - Sensibilidad media: {df_empleados['factor_sensibilidad'].mean():.3f}")
     
-        # =====================================================
+   
     # PASO 4: GENERAR RESPUESTAS ENCUESTA
-    # =====================================================
+ 
     print(f"\n📝 Paso 4: Generando respuestas a encuesta...")
     df_respuestas = generar_respuestas_encuesta(df_empleados)
     
@@ -98,16 +98,16 @@ def generar_dataset_escenario(escenario, n_empresas=50, n_empleados=2500, seed=4
     n_preguntas = len([c for c in df_respuestas.columns if c.startswith('q')])
     print(f"   ✅ {n_preguntas} preguntas generadas")
     
-    # =====================================================
+    
     # PASO 5: CALCULAR KPIS
-    # =====================================================
+   
     print(f"\n📊 Paso 5: Calculando KPIs...")
     df_con_kpis = calcular_kpis_empleado(df_completo)
     print(f"   ✅ KPIs calculados a nivel empleado")
     
-    # =====================================================
+  
     # PASO 6: CALCULAR COSTES
-    # =====================================================
+   
     print(f"\n💰 Paso 6: Calculando costes de rotación...")
     df_con_kpis["coste_rotacion_individual"] = df_con_kpis.apply(
         calcular_coste_rotacion_empleado, axis=1
@@ -117,9 +117,8 @@ def generar_dataset_escenario(escenario, n_empresas=50, n_empleados=2500, seed=4
     print(f"   ✅ Coste total estimado: {coste_total:,.2f}€")
     print(f"   ✅ Coste medio por empleado: {coste_medio:,.2f}€")
     
-    # =====================================================
     # PASO 7: VALIDAR CLASIFICACIÓN
-    # =====================================================
+   
     print(f"\n🔍 Paso 7: Validando clasificación de escenarios...")
     df_kpis_empresa = calcular_kpis_empresa(df_con_kpis)
     df_empresas_clasificadas = clasificar_escenario_empresa(df_kpis_empresa)
@@ -131,9 +130,9 @@ def generar_dataset_escenario(escenario, n_empresas=50, n_empleados=2500, seed=4
     
     print(f"   ✅ Clasificación validada: {n_correctas}/{n_total} correctas ({pct_correctas:.1f}%)")
     
-    # =====================================================
+  
     # PASO 8: CALCULAR FIABILIDAD
-    # =====================================================
+   
     print(f"\n🔬 Paso 8: Calculando fiabilidad (Alfa de Cronbach)...")
     fiabilidad = analisis_fiabilidad(df_con_kpis)
     
@@ -149,9 +148,9 @@ def generar_dataset_escenario(escenario, n_empresas=50, n_empleados=2500, seed=4
         if row["Dimensión"] in dimensiones_principales:
             print(f"      - {row['Dimensión']}: α = {row['Alfa_Cronbach']:.3f}")
     
-    # =====================================================
+   
     # PASO 9: EXPORTAR
-    # =====================================================
+ 
     print(f"\n💾 Paso 9: Exportando dataset...")
     exportar_dataset_escenario(escenario, df_empresas, df_con_kpis)
     
@@ -261,9 +260,9 @@ def generar_todos_los_escenarios(n_empresas=50, n_empleados=2500):
     return df_empresas_todos, df_empleados_todos
 
 
-# =====================================================
+
 # EJECUCIÓN PRINCIPAL
-# =====================================================
+
 
 if __name__ == "__main__":
     df_empresas, df_empleados = generar_todos_los_escenarios(
@@ -292,4 +291,4 @@ if __name__ == "__main__":
     print("="*60)
     print("\n📁 Datasets disponibles en: datasets/")
     print(f"📊 Total: {len(df_empresas)} empresas, {len(df_empleados)} empleados")
-    print("\n🚀 Siguiente paso: python src/exportar_para_powerbi.py")
+   
