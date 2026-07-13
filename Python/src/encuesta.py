@@ -1,7 +1,7 @@
 """
 Generador de Respuestas a Encuesta
 
-Genera respuestas a las 72 preguntas Likert de la encuesta EBLET
+Genera respuestas a las  preguntas Likert de la encuesta EBLET
 a partir de los estados latentes calculados por el modelo psicológico.
 
 """
@@ -18,14 +18,14 @@ from config import (
 
 def generar_respuestas_encuesta(df_empleados):
     """
-    Genera respuestas a las 72 preguntas de la encuesta EBLET.
+    Genera respuestas a las preguntas de la encuesta EBLET.
     
     Args:
         df_empleados: DataFrame con metadata de empleados Y columnas
                       L_burnout, L_boreout, L_wellbeing, L_rotation
     
     Returns:
-        DataFrame con 72 columnas (q1 a q72)
+        DataFrame con 72 columnas (q1 a q67)
     """
     n = len(df_empleados)
     todas_respuestas = pd.DataFrame(index=df_empleados.index)
@@ -100,14 +100,9 @@ def generar_respuestas_encuesta(df_empleados):
         todas_respuestas[f'q{q}'] = np.clip(L_rotation + ruido, 1, 5).round().astype(int)
     
 
-    # SECCIÓN I: INFRAOCUPACIÓN - ROTHLIN (q60-q64)
-
-    for q in range(60, 65):
-        ruido = np.random.normal(0, STD_RUIDO_ALTO, n)
-        todas_respuestas[f'q{q}'] = np.clip(L_boreout * 0.95 + ruido, 1, 5).round().astype(int)
     
   
-    # SECCIÓN J: CULTURA CVF (q65-q72)
+    # SECCIÓN J: CULTURA CVF (q60-q67)
   
     cultura_boost = {
         "Adhocracia": {"Adhocracia": 2.0, "Clan": 0.0, "Mercado": 0.0, "Jerarquica": 0.0},

@@ -515,38 +515,58 @@ def generar_informe_individual(kpis, perfil_resultado, respuestas_raw=None):
 
 # EJECUCION DE PRUEBA
 
-
 if __name__ == "__main__":
-    from encuesta_lite import calcular_kpis_lite
+    from encuesta_lite import calcular_kpis_lite, validar_respuestas
     
-
-    print("🧪 TEST DEL CLASIFICADOR INDIVIDUAL")
-
+    print(" TEST DEL CLASIFICADOR INDIVIDUAL (EBLET-Lite v2.1)")
+    print("="*80)
     
-    # Caso 1: Persona aburrida con alta intencion de cambio
+    # Caso 1: Persona aburrida con alta intención de cambio
     print("\n🔵 CASO 1: Persona aburrida con alta intención de cambio")
     respuestas_1 = {
-        'q16': 2, 'q19': 2, 'q23': 2, 'q28': 2,
-        'q37': 5, 'q39': 4, 'q41': 5, 'q43': 5,
-        'q45': 2, 'q46': 2, 'q47': 2, 'q48': 2,
-        'q57': 4, 'q58': 4, 'q59': 4,
-        'q65': 2, 'q66': 2, 'q67': 2, 'q68': 2,
-        'q69': 3, 'q70': 3, 'q71': 5, 'q72': 5
+        # Burnout (q10-q13): bajo
+        'q10': 2, 'q11': 2, 'q12': 2, 'q13': 2,
+        # Boreout (q14-q17): alto
+        'q14': 5, 'q15': 4, 'q16': 5, 'q17': 5,
+        # Bienestar (q18-q21): bajo
+        'q18': 2, 'q19': 2, 'q20': 2, 'q21': 2,
+        # Rotación (q22-q24): alta
+        'q22': 4, 'q23': 4, 'q24': 4,
+        # Cultura CVF (q25-q32): Jerarquica predominante
+        'q25': 2, 'q26': 2,  # Adhocracia
+        'q27': 2, 'q28': 2,  # Clan
+        'q29': 3, 'q30': 3,  # Mercado
+        'q31': 5, 'q32': 5   # Jerarquica
     }
+    
+    valido, msg = validar_respuestas(respuestas_1)
+    print(f"Validación: {msg}")
+    
     kpis_1 = calcular_kpis_lite(respuestas_1)
     resultado_1 = clasificar_individuo(kpis_1)
     print(generar_informe_individual(kpis_1, resultado_1, respuestas_1))
     
-    # Caso 2: Persona quemada con BAJA intencion de cambio
+    # Caso 2: Persona quemada con BAJA intención de cambio
     print("\n🟠 CASO 2: Persona quemada con baja intención de cambio")
     respuestas_2 = {
-        'q16': 5, 'q19': 5, 'q23': 4, 'q28': 4,
-        'q37': 2, 'q39': 2, 'q41': 2, 'q43': 2,
-        'q45': 2, 'q46': 1, 'q47': 2, 'q48': 2,
-        'q57': 2, 'q58': 2, 'q59': 2,  # ← Baja intención
-        'q65': 2, 'q66': 2, 'q67': 2, 'q68': 2,
-        'q69': 5, 'q70': 5, 'q71': 3, 'q72': 3
+        # Burnout (q10-q13): alto
+        'q10': 5, 'q11': 5, 'q12': 4, 'q13': 4,
+        # Boreout (q14-q17): bajo
+        'q14': 2, 'q15': 2, 'q16': 2, 'q17': 2,
+        # Bienestar (q18-q21): bajo
+        'q18': 2, 'q19': 1, 'q20': 2, 'q21': 2,
+        # Rotación (q22-q24): baja
+        'q22': 2, 'q23': 2, 'q24': 2,
+        # Cultura CVF (q25-q32): Mercado predominante
+        'q25': 2, 'q26': 2,  # Adhocracia
+        'q27': 2, 'q28': 2,  # Clan
+        'q29': 5, 'q30': 5,  # Mercado
+        'q31': 3, 'q32': 3   # Jerarquica
     }
+    
+    valido, msg = validar_respuestas(respuestas_2)
+    print(f"Validación: {msg}")
+    
     kpis_2 = calcular_kpis_lite(respuestas_2)
     resultado_2 = clasificar_individuo(kpis_2)
     print(generar_informe_individual(kpis_2, resultado_2, respuestas_2))

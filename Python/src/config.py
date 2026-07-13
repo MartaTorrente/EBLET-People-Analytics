@@ -34,15 +34,14 @@ PREGUNTAS = {
     "satisfaccion":       {"rango": range(50, 54),  "n_items": 4},   # q50-q53
     "autoeficacia":       {"rango": range(54, 57),  "n_items": 3},   # q54-q56
     "rotacion":           {"rango": range(57, 60),  "n_items": 3},   # q57-q59
-    "infraocupacion":     {"rango": range(60, 65),  "n_items": 5},   # q60-q64
-    "cvf_adhocracia":  {"rango": range(65, 67), "n_items": 2},
-    "cvf_clan":        {"rango": range(67, 69), "n_items": 2},
-    "cvf_mercado":     {"rango": range(69, 71), "n_items": 2},
-    "cvf_jerarquica":  {"rango": range(71, 73), "n_items": 2},
+    "cvf_adhocracia":  {"rango": range(60, 62), "n_items": 2},
+    "cvf_clan":        {"rango": range(62, 64), "n_items": 2},
+    "cvf_mercado":     {"rango": range(64, 66), "n_items": 2},
+    "cvf_jerarquica":  {"rango": range(66, 68), "n_items": 2},
 }
 
 # Total de preguntas Likert
-N_PREGUNTAS_LIKERT = 64
+N_PREGUNTAS_LIKERT = 67
 
 
 
@@ -219,12 +218,11 @@ FACTORES_PERFIL = {
 # 8 preguntas: 2 por cada cultura del CVF
 
 PREGUNTAS_CVF = {
-    "Adhocracia": [65, 66],   # Innovación, creatividad
-    "Clan": [67, 68],         # Cohesión, familia
-    "Mercado": [69, 70],      # Resultados, competitividad
-    "Jerarquica": [71, 72]    # Procesos, estabilidad
+    "Adhocracia": [60, 61],   # Innovación, creatividad
+    "Clan": [62, 63],         # Cohesión, familia
+    "Mercado": [64, 65],      # Resultados, competitividad
+    "Jerarquica": [66, 67]    # Procesos, estabilidad
 }
 
 # Total de preguntas con CVF
-N_PREGUNTAS_TOTAL = 72  # 64 Likert + 8 CVF
-
+N_PREGUNTAS_TOTAL = 67  

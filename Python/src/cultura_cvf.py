@@ -18,22 +18,22 @@ from config import CULTURE_EFFECTS
 
 PREGUNTAS_CVF = {
     "Adhocracia": {
-        "preguntas": [65, 66],
+        "preguntas": [60, 61],
         "descripcion": "Innovación, creatividad, riesgo, experimentación",
         "ejes": "Externo + Flexible"
     },
     "Clan": {
-        "preguntas": [67, 68],
+        "preguntas": [62, 63],
         "descripcion": "Cohesión, mentoría, desarrollo personal, familia",
         "ejes": "Interno + Flexible"
     },
     "Mercado": {
-        "preguntas": [69, 70],
+        "preguntas": [64, 65],
         "descripcion": "Resultados, competitividad, logro de objetivos",
         "ejes": "Externo + Control"
     },
     "Jerarquica": {
-        "preguntas": [71, 72],
+        "preguntas": [66, 67],
         "descripcion": "Procesos, estabilidad, control, eficiencia",
         "ejes": "Interno + Control"
     }
@@ -59,7 +59,7 @@ def calcular_scores_cvf_individuo(row):
     Calcula los scores de las 4 culturas para un empleado individual.
     
     Args:
-        row: Fila del DataFrame con respuestas q65-q72
+        row: Fila del DataFrame con respuestas q60-q67
     
     Returns:
         Diccionario con scores de cada cultura (0-5)
@@ -148,7 +148,7 @@ def generar_cultura_percibida(n_empleados, cultura_real, seed=None):
         seed: Semilla para reproducibilidad
     
     Returns:
-        DataFrame con columnas q65-q72
+        DataFrame con columnas q60-q67
     """
     if seed is not None:
         np.random.seed(seed)
@@ -212,21 +212,21 @@ def generar_informe_cultura(resultado_clasificacion):
     info = PREGUNTAS_CVF[cultura]
     
     informe = f"""
-╔════════════════════════════════════════════════════════════════╗
-║  🏛️  CULTURA ORGANIZACIONAL DETECTADA (CVF)                   ║
-╠════════════════════════════════════════════════════════════════╣
-║                                                                ║
-║  🎯 Cultura dominante: {cultura.upper()}                       ║
-║  📊 Confianza: {confianza*100:.1f}%                            ║
-║  🧭 Ejes: {info['ejes']}                                       ║
-║  💡 Descripción: {info['descripcion']}                         ║
-║                                                                ║
-║  📈 DISTRIBUCIÓN PERCIBIDA:                                    ║
-║    🔵 Adhocracia:  {dist['Adhocracia']:5.1f}%                  ║
-║    🟢 Clan:        {dist['Clan']:5.1f}%                        ║
-║    🟠 Mercado:     {dist['Mercado']:5.1f}%                     ║
-║    🟡 Jerárquica:  {dist['Jerarquica']:5.1f}%                  ║
-║                                                                ║
-╚════════════════════════════════════════════════════════════════╝
+
+  🏛️  CULTURA ORGANIZACIONAL DETECTADA (CVF)                   
+
+                                                               
+  🎯 Cultura dominante: {cultura.upper()}                      
+  📊 Confianza: {confianza*100:.1f}%                           
+  🧭 Ejes: {info['ejes']}                                      
+  💡 Descripción: {info['descripcion']}                        
+                                                               
+  📈 DISTRIBUCIÓN PERCIBIDA:                                   
+    🔵 Adhocracia:  {dist['Adhocracia']:5.1f}%                 
+    🟢 Clan:        {dist['Clan']:5.1f}%                       
+    🟠 Mercado:     {dist['Mercado']:5.1f}%                    
+    🟡 Jerárquica:  {dist['Jerarquica']:5.1f}%                 
+                                                               
+
 """
     return informe

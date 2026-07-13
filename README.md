@@ -301,9 +301,3 @@ Topp, C. W., et al. (2015). The WHO-5 Well-Being Index: A systematic review. *Ps
 ## 👥 Autora
 
 - **Marta Torrente** - *Proyecto final Data Analyst* 
-
-
-
-
-**Versión:** 2.0  
-**Última actualización:** Julio 2026

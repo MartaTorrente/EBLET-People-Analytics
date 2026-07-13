@@ -1,168 +1,141 @@
-# -*- coding: utf-8 -*-
-"""EBLET-Lite v2.0: 23 preguntas para clasificacion individual + cultura CVF
-
-Estructura:
-- Burnout: 4 preguntas (MBI-GS)
-- Boreout: 4 preguntas (EAL)
-- Bienestar: 4 preguntas (WHO-5)
-- Rotacion: 3 preguntas (Mobley)
-- Cultura CVF: 8 preguntas (2 por cultura)
-Total: 23 preguntas (~8 minutos)
+"""
+EBLET-Lite v2.1 - Cálculo de KPIs desde 23 preguntas
+=====================================================
+Mapeo de preguntas de la encuesta de Google Forms:
+- q10-q13: Burnout (4 preguntas)
+- q14-q17: Boreout (4 preguntas)
+- q18-q21: Bienestar WHO-5 (4 preguntas)
+- q22-q24: Rotación/Intención de cambio (3 preguntas)
+- q25-q32: Cultura CVF (8 preguntas)
 """
 
 import numpy as np
-import pandas as pd
-
-PREGUNTAS_LITE = {
-    "burnout": {"preguntas": [16, 19, 23, 28], "peso": 4, "items": {
-        16: "Me siento emocionalmente agotado/a por mi trabajo.",
-        19: "Trabajar todo el dia es un verdadero esfuerzo.",
-        23: "He desarrollado una actitud distante hacia mi trabajo.",
-        28: "Me he vuelto menos entusiasta con mi trabajo."}},
-    "boreout": {"preguntas": [37, 39, 41, 43], "peso": 4, "items": {
-        37: "Mi trabajo me resulta monotono y repetitivo.",
-        39: "Tengo la sensacion de que mi trabajo carece de sentido.",
-        41: "A menudo me aburro en el trabajo.",
-        43: "Siento que estoy infrautilizado/a en mis funciones."}},
-    "bienestar": {"preguntas": [45, 46, 47, 48], "peso": 4, "items": {
-        45: "Me he sentido alegre y de buen humor.",
-        46: "Me he sentido tranquilo/a y relajado/a.",
-        47: "Me he sentido activo/a y vigoroso/a.",
-        48: "He tenido energia para hacer las cosas del dia a dia."}},
-    "rotacion": {"preguntas": [57, 58, 59], "peso": 3, "items": {
-        57: "Estoy buscando activamente otro empleo.",
-        58: "Es probable que cambie de empresa el proximo ano.",
-        59: "A veces pienso en dejar mi trabajo."}},
-    "cultura_cvf": {"preguntas": [65, 66, 67, 68, 69, 70, 71, 72], "peso": 8, "items": {
-        65: "En mi organizacion se fomenta experimentar con nuevas ideas.",
-        66: "Se valora la creatividad y la innovacion.",
-        67: "Existe buena colaboracion entre companeros.",
-        68: "Mi responsable se preocupa por las personas.",
-        69: "Los objetivos son prioritarios en mi organizacion.",
-        70: "Existe presion por conseguir resultados.",
-        71: "Los procedimientos estan claramente definidos.",
-        72: "Hay normas y reglas que seguir."}}
-}
-
-TEXTO_PREGUNTAS = {}
-for dim, info in PREGUNTAS_LITE.items():
-    for q, texto in info["items"].items():
-        TEXTO_PREGUNTAS[q] = texto
-
-PREGUNTAS_ORDENADAS = [16, 19, 23, 28, 37, 39, 41, 43, 45, 46, 47, 48, 57, 58, 59, 65, 66, 67, 68, 69, 70, 71, 72]
 
 
 def calcular_kpis_lite(respuestas):
-    """Calcula KPIs + cultura a partir de las 23 respuestas."""
-    if isinstance(respuestas, pd.DataFrame):
-        if len(respuestas) == 1:
-            respuestas = respuestas.iloc[0].to_dict()
-        else:
-            raise ValueError("Solo se admite una fila")
+    """
+    Calcula los KPIs a partir de las respuestas de EBLET-Lite.
     
-    kpis = {}
-    kpis["burnout"] = np.mean([respuestas.get(f'q{q}', respuestas.get(q, 3)) for q in PREGUNTAS_LITE["burnout"]["preguntas"]])
-    kpis["boreout"] = np.mean([respuestas.get(f'q{q}', respuestas.get(q, 3)) for q in PREGUNTAS_LITE["boreout"]["preguntas"]])
-    kpis["bienestar"] = np.mean([respuestas.get(f'q{q}', respuestas.get(q, 3)) for q in PREGUNTAS_LITE["bienestar"]["preguntas"]])
-    kpis["rotacion"] = np.mean([respuestas.get(f'q{q}', respuestas.get(q, 3)) for q in PREGUNTAS_LITE["rotacion"]["preguntas"]])
+    Args:
+        respuestas: Diccionario con claves 'q10' a 'q32' (23 preguntas)
+                   O lista/array de 23 valores en orden
     
-    # Cultura CVF (8 preguntas, 2 por cultura)
-    kpis["cultura_adhocracia"] = np.mean([respuestas.get(f'q{q}', respuestas.get(q, 3)) for q in [65, 66]])
-    kpis["cultura_clan"] = np.mean([respuestas.get(f'q{q}', respuestas.get(q, 3)) for q in [67, 68]])
-    kpis["cultura_mercado"] = np.mean([respuestas.get(f'q{q}', respuestas.get(q, 3)) for q in [69, 70]])
-    kpis["cultura_jerarquica"] = np.mean([respuestas.get(f'q{q}', respuestas.get(q, 3)) for q in [71, 72]])
+    Returns:
+        Diccionario con los KPIs calculados
+    """
+    # Si es diccionario, extraer valores
+    if isinstance(respuestas, dict):
+        # Burnout: q10-q13
+        burnout_vals = [respuestas[f'q{i}'] for i in range(10, 14)]
+        # Boreout: q14-q17
+        boreout_vals = [respuestas[f'q{i}'] for i in range(14, 18)]
+        # Bienestar: q18-q21
+        bienestar_vals = [respuestas[f'q{i}'] for i in range(18, 22)]
+        # Rotación: q22-q24
+        rotacion_vals = [respuestas[f'q{i}'] for i in range(22, 25)]
+        # Cultura CVF: q25-q32
+        cvf_vals = [respuestas[f'q{i}'] for i in range(25, 33)]
+    else:
+        # Si es lista/array, usar índices
+        burnout_vals = respuestas[0:4]      # q10-q13
+        boreout_vals = respuestas[4:8]      # q14-q17
+        bienestar_vals = respuestas[8:12]   # q18-q21
+        rotacion_vals = respuestas[12:15]   # q22-q24
+        cvf_vals = respuestas[15:23]        # q25-q32
     
+    # Calcular KPIs
+    kpis = {
+        "burnout": np.mean(burnout_vals),
+        "boreout": np.mean(boreout_vals),
+        "bienestar": np.mean(bienestar_vals),
+        "rotacion": np.mean(rotacion_vals),
+        "cvf_adhocracia": np.mean(cvf_vals[0:2]),   # q25-q26
+        "cvf_clan": np.mean(cvf_vals[2:4]),         # q27-q28
+        "cvf_mercado": np.mean(cvf_vals[4:6]),      # q29-q30
+        "cvf_jerarquica": np.mean(cvf_vals[6:8])    # q31-q32
+    }
+    
+    # Determinar cultura dominante
     culturas = {
-        "Adhocracia": kpis["cultura_adhocracia"],
-        "Clan": kpis["cultura_clan"],
-        "Mercado": kpis["cultura_mercado"],
-        "Jerarquica": kpis["cultura_jerarquica"]
+        "Adhocracia": kpis["cvf_adhocracia"],
+        "Clan": kpis["cvf_clan"],
+        "Mercado": kpis["cvf_mercado"],
+        "Jerarquica": kpis["cvf_jerarquica"]
     }
     kpis["cultura_dominante"] = max(culturas, key=culturas.get)
     kpis["cultura_scores"] = culturas
+    
     return kpis
 
 
 def validar_respuestas(respuestas):
-    """Valida que las respuestas sean correctas."""
-    esperadas = set(PREGUNTAS_ORDENADAS)
-    recibidas = set()
-    for key in respuestas.keys():
-        if isinstance(key, str) and key.startswith('q'):
-            recibidas.add(int(key[1:]))
-        else:
-            recibidas.add(int(key))
-    faltantes = esperadas - recibidas
-    if faltantes:
-        return False, f"Faltan: {faltantes}"
-    for key, valor in respuestas.items():
-        if not (1 <= valor <= 5):
-            return False, f"Valor invalido en {key}: {valor}"
-    return True, "OK"
-
-
-def generar_texto_formulario():
-    """Genera texto para Google Forms."""
-    texto = "EBLET-Lite v2.0: Evaluacion Rapida de Bienestar Laboral\n\n"
-    texto += "Escala: 1 (Totalmente en desacuerdo) a 5 (Totalmente de acuerdo)\n\n"
+    """
+    Valida que las respuestas sean correctas.
     
-    secciones = {
-        "BURNOUT": [16, 19, 23, 28],
-        "BOREOUT": [37, 39, 41, 43],
-        "BIENESTAR": [45, 46, 47, 48],
-        "ROTACION": [57, 58, 59],
-        "CULTURA - Innovacion": [65, 66],
-        "CULTURA - Colaboracion": [67, 68],
-        "CULTURA - Resultados": [69, 70],
-        "CULTURA - Normas": [71, 72]
-    }
+    Args:
+        respuestas: Diccionario o lista de respuestas
     
-    num = 1
-    for seccion, preguntas in secciones.items():
-        texto += f"\n--- {seccion} ---\n"
-        for q in preguntas:
-            texto += f"{num}. {TEXTO_PREGUNTAS[q]}\n"
-            num += 1
+    Returns:
+        Tuple (valido, mensaje)
+    """
+    if isinstance(respuestas, dict):
+        # Verificar que tenga todas las preguntas
+        preguntas_requeridas = [f'q{i}' for i in range(10, 33)]
+        faltantes = [p for p in preguntas_requeridas if p not in respuestas]
+        
+        if faltantes:
+            return False, f"Faltan preguntas: {', '.join(faltantes)}"
+        
+        # Verificar rangos
+        for q, val in respuestas.items():
+            if not (1 <= val <= 5):
+                return False, f"La pregunta {q} tiene valor {val} (debe ser 1-5)"
+        
+        return True, "Respuestas válidas"
     
-    return texto
+    elif isinstance(respuestas, (list, np.ndarray)):
+        if len(respuestas) != 23:
+            return False, f"Se esperaban 23 respuestas, se recibieron {len(respuestas)}"
+        
+        for i, val in enumerate(respuestas):
+            if not (1 <= val <= 5):
+                return False, f"La respuesta {i+1} tiene valor {val} (debe ser 1-5)"
+        
+        return True, "Respuestas válidas"
+    
+    else:
+        return False, "Formato de respuestas no válido"
 
 
+# Ejemplo de uso
 if __name__ == "__main__":
-    print("=" * 70)
-    print("EBLET-Lite v2.0: 23 PREGUNTAS")
-    print("=" * 70)
-    print("\nTEXTO PARA GOOGLE FORMS:\n")
-    print(generar_texto_formulario())
-    
-    print("\n" + "=" * 70)
-    print("TEST CON RESPUESTAS SIMULADAS")
-    print("=" * 70)
-    
-    test = {
-        'q16': 2, 'q19': 2, 'q23': 2, 'q28': 2,
-        'q37': 5, 'q39': 4, 'q41': 5, 'q43': 5,
-        'q45': 2, 'q46': 2, 'q47': 2, 'q48': 2,
-        'q57': 4, 'q58': 4, 'q59': 4,
-        'q65': 2, 'q66': 2,
-        'q67': 2, 'q68': 2,
-        'q69': 3, 'q70': 3,
-        'q71': 5, 'q72': 5
+    # Caso de prueba: Persona con boreout alto
+    respuestas_ejemplo = {
+        # Burnout (q10-q13): bajo
+        'q10': 2, 'q11': 1, 'q12': 2, 'q13': 1,
+        # Boreout (q14-q17): alto
+        'q14': 5, 'q15': 4, 'q16': 5, 'q17': 4,
+        # Bienestar (q18-q21): bajo
+        'q18': 2, 'q19': 2, 'q20': 2, 'q21': 1,
+        # Rotación (q22-q24): medio-alto
+        'q22': 3, 'q23': 4, 'q24': 3,
+        # Cultura CVF (q25-q32)
+        'q25': 2, 'q26': 2,  # Adhocracia
+        'q27': 3, 'q28': 3,  # Clan
+        'q29': 3, 'q30': 4,  # Mercado
+        'q31': 5, 'q32': 5   # Jerarquica
     }
     
-    valido, msg = validar_respuestas(test)
-    print(f"\nValidacion: {msg}")
+    # Validar
+    valido, mensaje = validar_respuestas(respuestas_ejemplo)
+    print(f"Validación: {mensaje}")
     
-    kpis = calcular_kpis_lite(test)
-    print("\nKPIs calculados:")
+    # Calcular KPIs
+    kpis = calcular_kpis_lite(respuestas_ejemplo)
+    
+    print("\n📊 KPIs calculados:")
     for kpi, valor in kpis.items():
-        if kpi != "cultura_scores":
-            if isinstance(valor, (int, float)):
-                print(f"   {kpi:20s}: {valor:.2f}")
-            else:
-                print(f"   {kpi:20s}: {valor}")
-    
-    print("\nCultura percibida:")
-    for cultura, valor in kpis["cultura_scores"].items():
-        estrella = " <-- DOMINANTE" if cultura == kpis["cultura_dominante"] else ""
-        print(f"   {cultura:12s}: {valor:.0f}/5{estrella}")
-    print(f"   => Dominante: {kpis['cultura_dominante']}")
+        if isinstance(valor, float):
+            print(f"   {kpi}: {valor:.2f}")
+        else:
+            print(f"   {kpi}: {valor}")

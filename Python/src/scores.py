@@ -52,10 +52,9 @@ def calcular_kpis_empleado(df_respuestas):
     
     df["kpi_burnout"] = (burnout_agotam + burnout_cinismo + burnout_ineficacia) / 3
     
-    # KPI Boreout: Combinación de EAL (q37-q44) + Infraocupación (q60-q64)
+    # KPI Boreout: Combinación de EAL (q37-q44)
     boreout_eal = df[_obtener_columnas(range(37, 45))].mean(axis=1)
-    boreout_infra = df[_obtener_columnas(range(60, 65))].mean(axis=1)
-    df["kpi_boreout"] = (boreout_eal * 8 + boreout_infra * 5) / 13
+    df["kpi_boreout"] = boreout_eal * 8  / 8
     
     # KPI Bienestar: Combinación de WHO-5 (q45-q49) + Satisfacción (q50-q53)
     bienestar_who5 = df[_obtener_columnas(range(45, 50))].mean(axis=1)
@@ -76,7 +75,7 @@ def calcular_kpis_empleado(df_respuestas):
     
     # Boreout - Sub-dimensiones
     df["boreout_aburrimiento_eal"] = boreout_eal
-    df["boreout_infraocupacion"] = boreout_infra
+    
     
     # Bienestar - Sub-dimensiones
     df["bienestar_who5"] = bienestar_who5
@@ -84,7 +83,7 @@ def calcular_kpis_empleado(df_respuestas):
     df["bienestar_autoeficacia"] = df[_obtener_columnas(range(54, 57))].mean(axis=1)
     
   
-    # 🆕 KPIs DE CULTURA CVF (q65-q72)
+    # 🆕 KPIs DE CULTURA CVF (q60-q67)
    
     # Solo si existen las columnas CVF
     try:
@@ -153,7 +152,7 @@ def calcular_kpis_empresa(df_empleados):
             
             kpis_empresa["cultura_percibida"] = culturas_percibidas
         else:
-            print("   ⚠️ Columnas CVF (q65-q72) no encontradas. Saltando clasificación cultural.")
+            print("   ⚠️ Columnas CVF (q60-q67) no encontradas. Saltando clasificación cultural.")
     except (ImportError, KeyError) as e:
         print(f"   ⚠️ No se pudo clasificar cultura: {e}")
     
@@ -274,7 +273,6 @@ def analisis_fiabilidad(df_empleados):
         "Satisfacción Laboral": [f'q{i}' for i in range(50, 54)],
         "Autoeficacia (Bandura)": [f'q{i}' for i in range(54, 57)],
         "Intención de Rotación (Mobley)": [f'q{i}' for i in range(57, 60)],
-        "Infraocupación (Rothlin)": [f'q{i}' for i in range(60, 65)],
         "Contexto Organizacional (JD-R)": [f'q{i}' for i in range(1, 16)],
     }
     
@@ -309,7 +307,7 @@ def calcular_kpis_cultura(df):
     Calcula los scores de cultura CVF a nivel empleado.
     
     Args:
-        df: DataFrame con columnas q65-q72
+        df: DataFrame con columnas q60-q67
     
     Returns:
         DataFrame con columnas cvf_adhocracia, cvf_clan, cvf_mercado, 
