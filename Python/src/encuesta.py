@@ -12,9 +12,30 @@ import numpy as np
 from config import (
     STD_RUIDO,
     STD_RUIDO_ALTO,
-    PREGUNTAS_CVF
+    PREGUNTAS_CVF,
+    preguntas_dimension,
 )
 
+def generar_bloque_likert(
+    respuestas,
+    columnas,
+    base,
+    desviacion,
+):
+    """
+    Genera un bloque de respuestas Likert a partir de un valor base.
+
+    Mantiene los valores dentro del rango 1-5 y devuelve enteros.
+    """
+    n = len(respuestas)
+
+    for columna in columnas:
+        ruido = np.random.normal(0, desviacion, n)
+        respuestas[columna] = (
+            np.clip(base + ruido, 1, 5)
+            .round()
+            .astype(int)
+        )
 
 def generar_respuestas_encuesta(df_empleados):
     """
@@ -25,7 +46,7 @@ def generar_respuestas_encuesta(df_empleados):
                       L_burnout, L_boreout, L_wellbeing, L_rotation
     
     Returns:
-        DataFrame con 72 columnas (q1 a q67)
+        DataFrame con 67 columnas Likert (q1 a q67)
     """
     n = len(df_empleados)
     todas_respuestas = pd.DataFrame(index=df_empleados.index)
@@ -39,70 +60,104 @@ def generar_respuestas_encuesta(df_empleados):
  
     # SECCIÓN C: CONTEXTO ORGANIZACIONAL (q1-q15)
    
-    for q in range(1, 16):
-        base = 2.0 + L_wellbeing * 0.5 + L_burnout * (-0.15) + L_boreout * (-0.15)
-        ruido = np.random.normal(0, STD_RUIDO, n)
-        todas_respuestas[f'q{q}'] = np.clip(base + ruido, 1, 5).round().astype(int)
+    base_contexto = (
+        2.0
+        + L_wellbeing * 0.5
+        - L_burnout * 0.15
+        - L_boreout * 0.15
+    )
+
+    generar_bloque_likert(
+        respuestas=todas_respuestas,
+        columnas=preguntas_dimension("contexto"),
+        base=base_contexto,
+        desviacion=STD_RUIDO,
+    )
     
  
     # SECCIÓN D: BURNOUT - MBI-GS (q16-q36)
    
     
     # Dimensión 1: Agotamiento Emocional (q16-q22)
-    for q in range(16, 23):
-        ruido = np.random.normal(0, STD_RUIDO_ALTO, n)
-        todas_respuestas[f'q{q}'] = np.clip(L_burnout + ruido, 1, 5).round().astype(int)
+    generar_bloque_likert(
+        respuestas=todas_respuestas,
+        columnas=preguntas_dimension("burnout_agotam"),
+        base=L_burnout,
+        desviacion=STD_RUIDO_ALTO,
+    )
     
     # Dimensión 2: Cinismo/Despersonalización (q23-q29)
-    for q in range(23, 30):
-        ruido = np.random.normal(0, STD_RUIDO_ALTO, n)
-        todas_respuestas[f'q{q}'] = np.clip(L_burnout * 0.9 + ruido, 1, 5).round().astype(int)
+    generar_bloque_likert(
+        respuestas=todas_respuestas,
+        columnas=preguntas_dimension("burnout_cinismo"),
+        base=L_burnout * 0.9,
+        desviacion=STD_RUIDO_ALTO,
+    )
     
     # Dimensión 3: Eficacia Profesional INVERTIDA (q30-q36)
-    for q in range(30, 37):
-        ruido = np.random.normal(0, STD_RUIDO_ALTO, n)
-        todas_respuestas[f'q{q}'] = np.clip((6 - L_burnout) + ruido, 1, 5).round().astype(int)
+    generar_bloque_likert(
+        respuestas=todas_respuestas,
+        columnas=preguntas_dimension("burnout_ineficacia"),
+        base=6 - L_burnout,
+        desviacion=STD_RUIDO_ALTO,
+    )
     
     
     # SECCIÓN E: BOREOUT - EAL (q37-q44)
   
-    for q in range(37, 45):
-        ruido = np.random.normal(0, STD_RUIDO_ALTO, n)
-        todas_respuestas[f'q{q}'] = np.clip(L_boreout + ruido, 1, 5).round().astype(int)
+    generar_bloque_likert(
+        respuestas=todas_respuestas,
+        columnas=preguntas_dimension("aburrimiento_eal"),
+        base=L_boreout,
+        desviacion=STD_RUIDO_ALTO,
+    )
     
    
     # SECCIÓN F: BIENESTAR - WHO-5 (q45-q49)
    
-    for q in range(45, 50):
-        ruido = np.random.normal(0, STD_RUIDO, n)
-        todas_respuestas[f'q{q}'] = np.clip(L_wellbeing + ruido, 1, 5).round().astype(int)
+    generar_bloque_likert(
+        respuestas=todas_respuestas,
+        columnas=preguntas_dimension("bienestar_who5"),
+        base=L_wellbeing,
+        desviacion=STD_RUIDO,
+    )
     
    
     # SECCIÓN G: SATISFACCIÓN + AUTOEFICACIA (q50-q56)
     
     
     # Satisfacción (q50-q53)
-    for q in range(50, 54):
-        ruido = np.random.normal(0, STD_RUIDO, n)
-        todas_respuestas[f'q{q}'] = np.clip(L_wellbeing * 0.9 + ruido, 1, 5).round().astype(int)
+    generar_bloque_likert(
+        respuestas=todas_respuestas,
+        columnas=preguntas_dimension("satisfaccion"),
+        base=L_wellbeing * 0.9,
+        desviacion=STD_RUIDO,
+    )
     
     # Autoeficacia (q54-q56)
-    for q in range(54, 57):
-        ruido = np.random.normal(0, STD_RUIDO, n)
-        base_autoeficacia = L_wellbeing * 0.7 + 1.5  # Correlación con bienestar
-        todas_respuestas[f'q{q}'] = np.clip(base_autoeficacia + ruido, 1, 5).round().astype(int)
+    base_autoeficacia = L_wellbeing * 0.7 + 1.5
+
+    generar_bloque_likert(
+        respuestas=todas_respuestas,
+        columnas=preguntas_dimension("autoeficacia"),
+        base=base_autoeficacia,
+        desviacion=STD_RUIDO,
+    )
     
 
     # SECCIÓN H: ROTACIÓN - MOBLEY (q57-q59)
 
-    for q in range(57, 60):
-        ruido = np.random.normal(0, STD_RUIDO, n)
-        todas_respuestas[f'q{q}'] = np.clip(L_rotation + ruido, 1, 5).round().astype(int)
+    generar_bloque_likert(
+        respuestas=todas_respuestas,
+        columnas=preguntas_dimension("rotacion"),
+        base=L_rotation,
+        desviacion=STD_RUIDO,
+    )
     
 
     
   
-    # SECCIÓN J: CULTURA CVF (q60-q67)
+    # SECCIÓN I: CULTURA CVF (q60-q67)
   
     cultura_boost = {
         "Adhocracia": {"Adhocracia": 2.0, "Clan": 0.0, "Mercado": 0.0, "Jerarquica": 0.0},

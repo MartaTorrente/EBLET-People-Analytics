@@ -1,4 +1,3 @@
-
 """
 Módulo de configuración central del framework EBLET.
 ===================================================
@@ -17,12 +16,18 @@ Modificar este archivo permite ajustar el comportamiento del framework
 sin alterar la lógica de los algoritmos.
 
 """
+from pathlib import Path
 
+print("📁 Directorio actual:", Path.cwd().resolve())
+print(
+    "📁 Ruta real de datasets:",
+    (Path.cwd() / "datasets").resolve()
+)
 
 # 1. ESTRUCTURA DE LA ENCUESTA (v2.0)
 
 
-# Rangos de preguntas por dimensión (numeración Likert 1-64)
+# Rangos de preguntas por dimensión (numeración Likert 1-67)
 PREGUNTAS = {
     "contexto":           {"rango": range(1, 16),   "n_items": 15},  # q1-q15
     "burnout_agotam":     {"rango": range(16, 23),  "n_items": 7},   # q16-q22
@@ -112,6 +117,14 @@ SCENARIOS = {
             "Mercado": 0.60        # Cultura de Mercado extrema
         }
     }
+}
+
+CODIGOS_ESCENARIO = {
+    "saludable": "SAL",
+    "estable": "EST",
+    "riesgo_burnout": "RBU",
+    "riesgo_boreout": "RBO",
+    "critico": "CRI",
 }
 
 # 3. EFECTOS DE CULTURA ORGANIZACIONAL (CVF - Cameron & Quinn)
@@ -205,6 +218,13 @@ OUTLIER_STD = 0.3           # Reducido de 0.5 a 0.3
 
 # 8. COSTES DE ROTACIÓN (SHRM/Gallup)
 
+TRAMOS_ROTACION = [
+    {"max_kpi": 1.5, "tasa": 0.05},
+    {"max_kpi": 2.5, "tasa": 0.10},
+    {"max_kpi": 3.5, "tasa": 0.20},
+    {"max_kpi": 4.5, "tasa": 0.35},
+    {"max_kpi": 5.0, "tasa": 0.50},
+]
 
 FACTORES_PERFIL = {
     "Junior": 0.50,      # 50% del salario anual
@@ -213,7 +233,7 @@ FACTORES_PERFIL = {
     "Lead": 1.50         # 150% del salario anual
 }
 
-# 9. PREGUNTAS CVF (q65-q72) - Percepción Cultural
+# 9. PREGUNTAS CVF (q60-q67) - Percepción Cultural
 
 # 8 preguntas: 2 por cada cultura del CVF
 
@@ -224,5 +244,68 @@ PREGUNTAS_CVF = {
     "Jerarquica": [66, 67]    # Procesos, estabilidad
 }
 
+# Información descriptiva del Competing Values Framework
+
+INFO_CVF = {
+    "Adhocracia": {
+        "descripcion": (
+            "Innovación, creatividad, riesgo y experimentación"
+        ),
+        "ejes": "Externo + Flexible",
+    },
+    "Clan": {
+        "descripcion": (
+            "Cohesión, mentoría, desarrollo personal y colaboración"
+        ),
+        "ejes": "Interno + Flexible",
+    },
+    "Mercado": {
+        "descripcion": (
+            "Resultados, competitividad y logro de objetivos"
+        ),
+        "ejes": "Externo + Control",
+    },
+    "Jerarquica": {
+        "descripcion": (
+            "Procesos, estabilidad, control y eficiencia"
+        ),
+        "ejes": "Interno + Control",
+    },
+}
+
+
 # Total de preguntas con CVF
 N_PREGUNTAS_TOTAL = 67  
+
+# ==========================================================
+# FUNCIONES AUXILIARES
+# ==========================================================
+
+def preguntas_dimension(nombre):
+    """
+    Devuelve la lista de preguntas de una dimensión.
+
+    Ejemplo:
+        preguntas_dimension("burnout_agotam")
+        -> ["q16", "q17", ..., "q22"]
+    """
+    return [f"q{i}" for i in PREGUNTAS[nombre]["rango"]]
+
+
+def preguntas_cvf(cultura):
+    """
+    Devuelve las preguntas asociadas a una cultura CVF.
+
+    Ejemplo:
+        preguntas_cvf("Clan")
+        -> ["q62", "q63"]
+    """
+    return [f"q{i}" for i in PREGUNTAS_CVF[cultura]]
+
+
+def todas_las_preguntas():
+    """
+    Devuelve todas las preguntas Likert del sistema.
+    """
+    return [f"q{i}" for i in range(1, N_PREGUNTAS_TOTAL + 1)]
+

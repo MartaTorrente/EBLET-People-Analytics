@@ -1,8 +1,8 @@
 # 📋 Encuesta EBLET Completa (MBI-GS + EAL + WHO-5)
 
-**Versión:** 2.0 - Instrumentos Validados  
+**Versión:** Encuesta Enterprise consolidada  
 **Duración estimada:** 20-25 minutos  
-**Total de preguntas:**  (59 Likert + 12 demográficas)
+**Total de preguntas:** 84 (67 Likert + 12 demográficas + 5 de hábitos)
 
 ---
 
@@ -473,7 +473,7 @@ Esta encuesta evalúa múltiples dimensiones del bienestar laboral. Tus respuest
 | ○ | ○ | ○ | ○ | ○ |
 
 
-1🏛️ SECCIÓN I: Cultura Organizacional (CVF)
+## 🏛️ SECCIÓN I: Cultura Organizacional (CVF)
 Basado en el Competing Values Framework (Cameron & Quinn, 2011)
 Escala: 1 (Totalmente en desacuerdo) a 5 (Totalmente de acuerdo)
 Adhocracia (Innovación y Creatividad)
@@ -482,7 +482,7 @@ Adhocracia (Innovación y Creatividad)
 |---|---|---|---|---|
 | ○ | ○ | ○ | ○ | ○ |
 
-61. Se valora la creatividad, la innovación y el cambio por encima de la estabilidad..
+61. Se valora la creatividad, la innovación y el cambio por encima de la estabilidad.
 | 1 | 2 | 3 | 4 | 5 |
 |---|---|---|---|---|
 | ○ | ○ | ○ | ○ | ○ |
@@ -546,19 +546,24 @@ Tus respuestas son valiosas para comprender y mejorar el bienestar laboral en tu
 | E | 37-44 | **EAL** | Aburrimiento Laboral | KPI_Boreout |
 | F | 45-49 | **WHO-5** | Bienestar | KPI_Bienestar |
 | G | 50-56 | Bandura | Satisfacción + Autoeficacia | KPI_Bienestar |
-| H | 57-59 | Mobley | Rotación | KPI_Rotación |
+| H | 57-59 | Mobley | Intención de rotación | KPI_Rotación |
+| I | 60-67 | CVF | Cultura organizacional percibida | Scores_CVF |
 
 
 ### Mapeo para el Sistema EBLET
 
-Las preguntas numeradas **1-64** se mapean a las variables internas:
+Las preguntas numeradas **1-67** se mapean a las variables internas:
 
 - Preguntas **1-15** → `q1` a `q15` (Contexto)
 - Preguntas **16-36** → `q16` a `q36` (Burnout - MBI-GS)
 - Preguntas **37-44** → `q37` a `q44` (Aburrimiento - EAL)
 - Preguntas **45-49** → `q45` a `q49` (Bienestar - WHO-5)
 - Preguntas **50-56** → `q50` a `q56` (Satisfacción + Autoeficacia)
-- Preguntas **57-59** → `q57` a `q59` (Rotación)
+- Preguntas **57-59** → `q57` a `q59` (Intención de rotación)
+- Preguntas **60-61** → `q60` a `q61` (CVF - Adhocracia)
+- Preguntas **62-63** → `q62` a `q63` (CVF - Clan)
+- Preguntas **64-65** → `q64` a `q65` (CVF - Mercado)
+- Preguntas **66-67** → `q66` a `q67` (CVF - Jerárquica)
 
 
 
@@ -569,10 +574,11 @@ Los ítems de la **Dimensión 3 del MBI-GS (Eficacia Profesional, preguntas 30-3
 
 ### Bases Teóricas
 
-- **Burnout:** Maslach Burnout Inventory - General Survey (MBI-GS; Schaufeli et al., 1996) - **22 ítems completos**
+- **Burnout:** Maslach Burnout Inventory - General Survey (MBI-GS; Schaufeli et al., 1996) - **21 ítems (7 por dimensión)**
 - **Aburrimiento Laboral:** Escala de Aburrimiento Laboral (EAL; Martínez-Lugo & Rodríguez-Montalbán, 2017) - **8 ítems completos**
 - **Bienestar:** WHO-5 Well-Being Index (Topp et al., 2015) - **5 ítems completos**
-- **Autoeficacia:** Bandura (1997) - **7 ítems**
+- **Satisfacción laboral:** 4 ítems (q50-q53)
+- **Autoeficacia:** Bandura (1997) - **3 ítems (q54-q56)**
 - **Rotación:** Mobley (1977) - **3 ítems**
 - **Modelo general:** Job Demands-Resources Model (Demerouti et al., 2001)
 

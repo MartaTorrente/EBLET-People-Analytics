@@ -12,15 +12,17 @@ un valor alto signifique más burnout.
 import pandas as pd
 import numpy as np
 
-from config import PREGUNTAS, UMBRALES
-from cultura_cvf import clasificar_cultura_empresa, PREGUNTAS_CVF
+from config import (
+    PREGUNTAS,
+    UMBRALES,
+    preguntas_dimension,
+    preguntas_cvf,
+)
 
-
-def _obtener_columnas(rango):
-    """Convierte un range a lista de nombres de columnas."""
-    return [f'q{i}' for i in rango]
-
-
+from cultura_cvf import (
+    clasificar_cultura_empresa,
+    PREGUNTAS_CVF,
+)
 
 # KPIs A NIVEL EMPLEADO
 
@@ -29,7 +31,7 @@ def calcular_kpis_empleado(df_respuestas):
     Calcula KPIs a nivel empleado a partir de las respuestas.
     
     Args:
-        df_respuestas: DataFrame con columnas q1 a q72
+        df_respuestas: DataFrame con columnas q1 a q67
     
     Returns:
         DataFrame con KPIs añadidos
@@ -41,28 +43,28 @@ def calcular_kpis_empleado(df_respuestas):
     
     
     # KPI Contexto: Media de q1-q15
-    df["kpi_contexto"] = df[_obtener_columnas(range(1, 16))].mean(axis=1)
+    df["kpi_contexto"] = df[preguntas_dimension("contexto")].mean(axis=1)
     
     # KPI Burnout: Media de q16-q36 (con q30-q36 INVERTIDAS)
-    burnout_agotam = df[_obtener_columnas(range(16, 23))].mean(axis=1)
-    burnout_cinismo = df[_obtener_columnas(range(23, 30))].mean(axis=1)
-    burnout_ineficacia_raw = df[_obtener_columnas(range(30, 37))].mean(axis=1)
+    burnout_agotam = df[preguntas_dimension("burnout_agotam")].mean(axis=1)
+    burnout_cinismo = df[preguntas_dimension("burnout_cinismo")].mean(axis=1)
+    burnout_ineficacia_raw = df[preguntas_dimension("burnout_ineficacia")].mean(axis=1)
     # INVERSIÓN: eficacia alta = burnout bajo
     burnout_ineficacia = 6 - burnout_ineficacia_raw
     
     df["kpi_burnout"] = (burnout_agotam + burnout_cinismo + burnout_ineficacia) / 3
     
     # KPI Boreout: Combinación de EAL (q37-q44)
-    boreout_eal = df[_obtener_columnas(range(37, 45))].mean(axis=1)
-    df["kpi_boreout"] = boreout_eal * 8  / 8
+    boreout_eal = df[preguntas_dimension("aburrimiento_eal")].mean(axis=1)
+    df["kpi_boreout"] = boreout_eal
     
     # KPI Bienestar: Combinación de WHO-5 (q45-q49) + Satisfacción (q50-q53)
-    bienestar_who5 = df[_obtener_columnas(range(45, 50))].mean(axis=1)
-    satisfaccion = df[_obtener_columnas(range(50, 54))].mean(axis=1)
+    bienestar_who5 = df[preguntas_dimension("bienestar_who5")].mean(axis=1)
+    satisfaccion = df[preguntas_dimension("satisfaccion")].mean(axis=1)
     df["kpi_bienestar"] = (bienestar_who5 * 5 + satisfaccion * 4) / 9
     
     # KPI Rotación: Media de q57-q59
-    df["kpi_rotacion"] = df[_obtener_columnas(range(57, 60))].mean(axis=1)
+    df["kpi_rotacion"] = df[preguntas_dimension("rotacion")].mean(axis=1)
     
    
     # SUB-DIMENSIONES (para análisis detallado)
@@ -80,7 +82,7 @@ def calcular_kpis_empleado(df_respuestas):
     # Bienestar - Sub-dimensiones
     df["bienestar_who5"] = bienestar_who5
     df["bienestar_satisfaccion"] = satisfaccion
-    df["bienestar_autoeficacia"] = df[_obtener_columnas(range(54, 57))].mean(axis=1)
+    df["bienestar_autoeficacia"] = df[preguntas_dimension("autoeficacia")].mean(axis=1)
     
   
     # 🆕 KPIs DE CULTURA CVF (q60-q67)
@@ -89,7 +91,7 @@ def calcular_kpis_empleado(df_respuestas):
     try:
                 
         for cultura, info in PREGUNTAS_CVF.items():
-            preguntas = [f'q{p}' for p in info["preguntas"]]
+            preguntas = preguntas_cvf(cultura)
             # Verificar que las columnas existen
             if all(p in df.columns for p in preguntas):
                 df[f"cvf_{cultura.lower()}"] = df[preguntas].mean(axis=1)
@@ -138,8 +140,11 @@ def calcular_kpis_empresa(df_empleados):
         
         # Verificar que todas las preguntas CVF existen en el DataFrame
         todas_preguntas_cvf = []
-        for info in PREGUNTAS_CVF.values():
-            todas_preguntas_cvf.extend([f'q{p}' for p in info["preguntas"]])
+
+        for cultura in PREGUNTAS_CVF:
+            todas_preguntas_cvf.extend(
+                preguntas_cvf(cultura)
+            )
         
         columnas_existentes = all(col in df_empleados.columns for col in todas_preguntas_cvf)
         
@@ -265,22 +270,22 @@ def analisis_fiabilidad(df_empleados):
     Calcula la fiabilidad (Alfa de Cronbach) de todas las dimensiones.
     """
     dimensiones = {
-        "Burnout - Agotamiento (MBI-GS)": [f'q{i}' for i in range(16, 23)],
-        "Burnout - Cinismo (MBI-GS)": [f'q{i}' for i in range(23, 30)],
-        "Burnout - Ineficacia (MBI-GS)": [f'q{i}' for i in range(30, 37)],
-        "Aburrimiento Laboral (EAL)": [f'q{i}' for i in range(37, 45)],
-        "Bienestar (WHO-5)": [f'q{i}' for i in range(45, 50)],
-        "Satisfacción Laboral": [f'q{i}' for i in range(50, 54)],
-        "Autoeficacia (Bandura)": [f'q{i}' for i in range(54, 57)],
-        "Intención de Rotación (Mobley)": [f'q{i}' for i in range(57, 60)],
-        "Contexto Organizacional (JD-R)": [f'q{i}' for i in range(1, 16)],
+        "Burnout - Agotamiento (MBI-GS)": preguntas_dimension("burnout_agotam"),
+        "Burnout - Cinismo (MBI-GS)": preguntas_dimension("burnout_cinismo"),
+        "Burnout - Ineficacia (MBI-GS)": preguntas_dimension("burnout_ineficacia"),
+        "Aburrimiento Laboral (EAL)": preguntas_dimension("aburrimiento_eal"),
+        "Bienestar (WHO-5)": preguntas_dimension("bienestar_who5"),
+        "Satisfacción Laboral": preguntas_dimension("satisfaccion"),
+        "Autoeficacia (Bandura)": preguntas_dimension("autoeficacia"),
+        "Intención de Rotación (Mobley)": preguntas_dimension("rotacion"),
+        "Contexto Organizacional (JD-R)": preguntas_dimension("contexto"),
     }
     
     # 🆕 Añadir dimensiones CVF si existen las columnas
     try:
         
         for cultura, info in PREGUNTAS_CVF.items():
-            preguntas = [f'q{p}' for p in info["preguntas"]]
+            preguntas = preguntas_cvf(cultura)
             if all(p in df_empleados.columns for p in preguntas):
                 dimensiones[f"Cultura CVF - {cultura}"] = preguntas
     except ImportError:
@@ -319,7 +324,7 @@ def calcular_kpis_cultura(df):
     
     # Scores por cultura para cada empleado
     for cultura, info in PREGUNTAS_CVF.items():
-        preguntas = [f'q{p}' for p in info["preguntas"]]
+        preguntas = preguntas_cvf(cultura)
         df[f"cvf_{cultura.lower()}"] = df[preguntas].mean(axis=1)
     
     # Cultura dominante individual

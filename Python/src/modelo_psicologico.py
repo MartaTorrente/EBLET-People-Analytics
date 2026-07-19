@@ -7,7 +7,7 @@ a partir de los valores base del escenario y los efectos organizacionales.
 """
 
 import numpy as np
-import pandas as pd
+
 
 from config import (
     CULTURE_EFFECTS,
@@ -88,10 +88,11 @@ def añadir_factores_individuales(n):
 
 def añadir_outliers(n, L_burnout, L_boreout, L_wellbeing):
     """
-    Añade outliers naturales (5% de empleados con perfil atípico).
-    
-    En una empresa saludable, algunos empleados pueden estar mal.
-    En una empresa crítica, algunos pueden estar bien (resilientes).
+    Añade una proporción configurable de empleados con perfiles atípicos.
+
+    En una organización saludable, algunos empleados pueden presentar
+    malestar. En una organización crítica, algunas personas pueden
+    mostrar una situación mejor de la esperada.
     """
     n_outliers = int(n * PORCENTAJE_OUTLIERS)
     if n_outliers == 0:
@@ -168,7 +169,7 @@ def construir_modelo_psicologico(df):
     L_wellbeing += np.random.normal(0, STD_RUIDO, n)
     
     
-    # 5. OUTLIERS NATURALES (5% de empleados atípicos)
+    # 5. OUTLIERS NATURALES 
     
     L_burnout, L_boreout, L_wellbeing = añadir_outliers(
         n, L_burnout, L_boreout, L_wellbeing

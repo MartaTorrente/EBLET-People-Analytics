@@ -1,232 +1,314 @@
 """
 Clasificador de Cultura Organizacional (CVF)
 
-Clasifica la cultura según la PERCEPCIÓN de los empleados,
-no según una declaración corporativa.
+Clasifica la cultura organizacional percibida por los empleados
+a partir de las respuestas q60-q67.
 
-Este módulo implementa el Competing Values Framework (CVF)
-para clasificar la cultura organizacional percibida a partir
-de las respuestas q65-q72.
+Este módulo implementa el Competing Values Framework:
+- Adhocracia
+- Clan
+- Mercado
+- Jerárquica
 """
 
 import numpy as np
 import pandas as pd
-from config import CULTURE_EFFECTS
 
-# PREGUNTAS CVF (q65-q72)
-
-
-PREGUNTAS_CVF = {
-    "Adhocracia": {
-        "preguntas": [60, 61],
-        "descripcion": "Innovación, creatividad, riesgo, experimentación",
-        "ejes": "Externo + Flexible"
-    },
-    "Clan": {
-        "preguntas": [62, 63],
-        "descripcion": "Cohesión, mentoría, desarrollo personal, familia",
-        "ejes": "Interno + Flexible"
-    },
-    "Mercado": {
-        "preguntas": [64, 65],
-        "descripcion": "Resultados, competitividad, logro de objetivos",
-        "ejes": "Externo + Control"
-    },
-    "Jerarquica": {
-        "preguntas": [66, 67],
-        "descripcion": "Procesos, estabilidad, control, eficiencia",
-        "ejes": "Interno + Control"
-    }
-}
-
-# Colores para visualización
-COLORES_CVF = {
-    "Adhocracia": "#3498db",   # Azul
-    "Clan": "#2ecc71",         # Verde
-    "Mercado": "#e67e22",      # Naranja
-    "Jerarquica": "#f1c40f"    # Amarillo
-}
+from config import (
+    INFO_CVF,
+    PREGUNTAS_CVF,
+    preguntas_cvf,
+)
+from estilos import COLORES_CULTURA
 
 
+# Alias conservado por compatibilidad con notebooks existentes.
+COLORES_CVF = COLORES_CULTURA
 
 
-
-# CLASIFICADOR INDIVIDUAL
-
-
-def calcular_scores_cvf_individuo(row):
+def calcular_scores_cvf_individuo(
+    row: pd.Series,
+) -> dict:
     """
-    Calcula los scores de las 4 culturas para un empleado individual.
-    
+    Calcula los scores de las cuatro culturas para un empleado.
+
     Args:
-        row: Fila del DataFrame con respuestas q60-q67
-    
+        row:
+            Fila con las respuestas q60-q67.
+
     Returns:
-        Diccionario con scores de cada cultura (0-5)
+        Diccionario con el score medio de cada cultura.
     """
     scores = {}
-    for cultura, info in PREGUNTAS_CVF.items():
-        preguntas = [f'q{p}' for p in info["preguntas"]]
-        scores[cultura] = np.mean([row[p] for p in preguntas])
+
+    for cultura in PREGUNTAS_CVF:
+        columnas = preguntas_cvf(cultura)
+        scores[cultura] = float(row[columnas].mean())
+
     return scores
 
 
-def clasificar_cultura_individual(scores):
+def clasificar_cultura_individual(
+    scores: dict,
+) -> dict:
     """
-    Clasifica la cultura dominante para un empleado individual.
-    
+    Identifica la cultura con mayor puntuación individual.
+
+    El índice de predominio expresa el peso relativo de la cultura
+    ganadora sobre la suma de los cuatro scores. No representa una
+    probabilidad estadística.
+
     Args:
-        scores: Diccionario con scores de cada cultura
-    
+        scores:
+            Diccionario con los scores de las cuatro culturas.
+
     Returns:
-        Diccionario con cultura dominante y confianza
+        Cultura dominante, índice de predominio y scores originales.
     """
-    cultura_dominante = max(scores, key=scores.get)
+    if not scores:
+        raise ValueError(
+            "El diccionario de scores no puede estar vacío."
+        )
+
+    culturas_faltantes = set(PREGUNTAS_CVF) - set(scores)
+
+    if culturas_faltantes:
+        raise ValueError(
+            "Faltan scores de cultura: "
+            + ", ".join(sorted(culturas_faltantes))
+        )
+
+    cultura_dominante = max(
+        scores,
+        key=scores.get,
+    )
+
     total = sum(scores.values())
-    confianza = scores[cultura_dominante] / total if total > 0 else 0  # Índice simple de predominio de la cultura ganadora. No representa una probabilidad estadística.
-    
+
+    predominio = (
+        scores[cultura_dominante] / total
+        if total > 0
+        else 0
+    )
+
     return {
         "cultura_dominante": cultura_dominante,
-        "confianza": round(confianza, 3),
-        "scores": scores
+        "confianza": round(predominio, 3),
+        "scores": scores,
     }
 
 
-# CLASIFICADOR ORGANIZACIONAL (agregado)
-
-
-def clasificar_cultura_empresa(df_empleados):
+def clasificar_cultura_empresa(
+    df_empleados: pd.DataFrame,
+) -> dict:
     """
-    Clasifica la cultura dominante de una empresa según la percepción
-    agregada de sus empleados.
-    
+    Clasifica la cultura percibida de una empresa.
+
+    Los scores se calculan agregando las respuestas de todos
+    los empleados de la organización.
+
     Args:
-        df_empleados: DataFrame con empleados de una empresa
-    
+        df_empleados:
+            DataFrame con las respuestas q60-q67.
+
     Returns:
-        Diccionario con cultura dominante y distribución
+        Cultura dominante, índice de predominio, scores medios
+        y distribución relativa.
     """
-    # Calcular scores medios por cultura
+    if df_empleados.empty:
+        raise ValueError(
+            "El DataFrame de empleados no puede estar vacío."
+        )
+
+    columnas_cvf = [
+        columna
+        for cultura in PREGUNTAS_CVF
+        for columna in preguntas_cvf(cultura)
+    ]
+
+    columnas_faltantes = (
+        set(columnas_cvf)
+        - set(df_empleados.columns)
+    )
+
+    if columnas_faltantes:
+        raise ValueError(
+            "Faltan columnas CVF: "
+            + ", ".join(sorted(columnas_faltantes))
+        )
+
     scores_empresa = {}
-    for cultura, info in PREGUNTAS_CVF.items():
-        preguntas = [f'q{p}' for p in info["preguntas"]]
-        scores_empresa[cultura] = df_empleados[preguntas].mean().mean()
-    
-    # Cultura dominante
-    cultura_dominante = max(scores_empresa, key=scores_empresa.get)
+
+    for cultura in PREGUNTAS_CVF:
+        columnas = preguntas_cvf(cultura)
+
+        scores_empresa[cultura] = float(
+            df_empleados[columnas]
+            .mean(axis=1)
+            .mean()
+        )
+
+    cultura_dominante = max(
+        scores_empresa,
+        key=scores_empresa.get,
+    )
+
     total = sum(scores_empresa.values())
-    confianza = scores_empresa[cultura_dominante] / total if total > 0 else 0
-    
-    # Distribución porcentual
+
+    predominio = (
+        scores_empresa[cultura_dominante] / total
+        if total > 0
+        else 0
+    )
+
     distribucion = {
-        cultura: round(score / total * 100, 1)
+        cultura: round(
+            score / total * 100,
+            1,
+        )
+        if total > 0
+        else 0
         for cultura, score in scores_empresa.items()
     }
-    
+
     return {
         "cultura_dominante": cultura_dominante,
-        "confianza": round(confianza, 3),
+        "confianza": round(predominio, 3),
         "scores": scores_empresa,
-        "distribucion_pct": distribucion
+        "distribucion_pct": distribucion,
     }
 
 
-
-# GENERADOR DE CULTURA PARA BENCHMARK
-
-
-def generar_cultura_percibida(n_empleados, cultura_real, seed=None):
+def generar_cultura_percibida(
+    n_empleados: int,
+    cultura_real: str,
+    seed: int | None = None,
+) -> pd.DataFrame:
     """
-    Genera respuestas CVF realistas para empleados de una empresa
-    con una cultura real dada.
-    
-    Incluye variabilidad individual (no todos perciben igual).
-    
+    Genera respuestas sintéticas q60-q67 para una cultura dominante.
+
+    Esta función se conserva como utilidad independiente. El generador
+    principal de EBLET crea actualmente las respuestas culturales desde
+    encuesta.py.
+
     Args:
-        n_empleados: Número de empleados
-        cultura_real: Cultura "real" de la empresa (la dominante)
-        seed: Semilla para reproducibilidad
-    
+        n_empleados:
+            Número de empleados que se generarán.
+        cultura_real:
+            Cultura utilizada como dominante en la simulación.
+        seed:
+            Semilla opcional para reproducibilidad.
+
     Returns:
-        DataFrame con columnas q60-q67
+        DataFrame con respuestas enteras q60-q67.
+
+    Raises:
+        ValueError:
+            Si el número de empleados o la cultura no son válidos.
     """
+    if not isinstance(n_empleados, int) or n_empleados <= 0:
+        raise ValueError(
+            "n_empleados debe ser un entero mayor que cero."
+        )
+
+    if cultura_real not in PREGUNTAS_CVF:
+        raise ValueError(
+            f"Cultura no válida: {cultura_real!r}. "
+            f"Opciones: {', '.join(PREGUNTAS_CVF)}"
+        )
+
     if seed is not None:
         np.random.seed(seed)
-    
-    respuestas = pd.DataFrame(index=range(n_empleados))
-    
-    # Base: cada cultura tiene su "nivel base" según la cultura real
-    # La cultura real tiene valores altos, las demás tienen valores medios-bajos
+
+    respuestas = pd.DataFrame(
+        index=range(n_empleados)
+    )
+
     bases = {
-        "Adhocracia": 2.0,
-        "Clan": 2.0,
-        "Mercado": 2.0,
-        "Jerarquica": 2.0
+        cultura: 2.0
+        for cultura in PREGUNTAS_CVF
     }
-    
-    # La cultura real tiene boost de +2.0
+
     bases[cultura_real] += 2.0
-    
-    # Generar respuestas con variabilidad individual
-    for cultura, info in PREGUNTAS_CVF.items():
+
+    for cultura in PREGUNTAS_CVF:
         base = bases[cultura]
-        for q in info["preguntas"]:
-            # Cada empleado percibe con variabilidad
-            ruido = np.random.normal(0, 0.6, n_empleados)
-            valor = base + ruido
-            respuestas[f'q{q}'] = np.clip(np.round(valor), 1, 5).astype(int)
-    
+
+        for columna in preguntas_cvf(cultura):
+            ruido = np.random.normal(
+                0,
+                0.6,
+                n_empleados,
+            )
+
+            respuestas[columna] = (
+                np.clip(
+                    np.round(base + ruido),
+                    1,
+                    5,
+                )
+                .astype(int)
+            )
+
     return respuestas
 
 
-
-# VALIDADOR DE CONSISTENCIA
-
-
-def validar_clasificacion_cultura(df_empleados, cultura_esperada):
+def validar_clasificacion_cultura(
+    df_empleados: pd.DataFrame,
+    cultura_esperada: str,
+) -> bool:
     """
-    Valida que la cultura percibida coincide con la cultura esperada.
-    
-    Args:
-        df_empleados: DataFrame con empleados
-        cultura_esperada: Cultura que debería dominar
-    
-    Returns:
-        Boolean indicando si la clasificación es correcta
+    Comprueba si la cultura detectada coincide con la esperada.
     """
-    resultado = clasificar_cultura_empresa(df_empleados)
-    return resultado["cultura_dominante"] == cultura_esperada
+    if cultura_esperada not in PREGUNTAS_CVF:
+        raise ValueError(
+            f"Cultura esperada no válida: "
+            f"{cultura_esperada!r}"
+        )
+
+    resultado = clasificar_cultura_empresa(
+        df_empleados
+    )
+
+    return (
+        resultado["cultura_dominante"]
+        == cultura_esperada
+    )
 
 
-
-# RESUMEN EJECUTIVO
-
-
-def generar_informe_cultura(resultado_clasificacion):
+def generar_informe_cultura(
+    resultado_clasificacion: dict,
+) -> str:
     """
-    Genera un informe textual de la cultura detectada.
+    Genera un resumen textual de la cultura percibida.
     """
-    cultura = resultado_clasificacion["cultura_dominante"]
-    confianza = resultado_clasificacion["confianza"]
-    dist = resultado_clasificacion["distribucion_pct"]
-    info = PREGUNTAS_CVF[cultura]
-    
+    cultura = resultado_clasificacion[
+        "cultura_dominante"
+    ]
+
+    predominio = resultado_clasificacion[
+        "confianza"
+    ]
+
+    distribucion = resultado_clasificacion[
+        "distribucion_pct"
+    ]
+
+    info = INFO_CVF[cultura]
+
     informe = f"""
+🏛️ CULTURA ORGANIZACIONAL PERCIBIDA (CVF)
 
-  🏛️  CULTURA ORGANIZACIONAL DETECTADA (CVF)                   
+🎯 Cultura dominante: {cultura.upper()}
+📊 Índice de predominio: {predominio * 100:.1f} %
+🧭 Ejes: {info["ejes"]}
+💡 Descripción: {info["descripcion"]}
 
-                                                               
-  🎯 Cultura dominante: {cultura.upper()}                      
-  📊 Confianza: {confianza*100:.1f}%                           
-  🧭 Ejes: {info['ejes']}                                      
-  💡 Descripción: {info['descripcion']}                        
-                                                               
-  📈 DISTRIBUCIÓN PERCIBIDA:                                   
-    🔵 Adhocracia:  {dist['Adhocracia']:5.1f}%                 
-    🟢 Clan:        {dist['Clan']:5.1f}%                       
-    🟠 Mercado:     {dist['Mercado']:5.1f}%                    
-    🟡 Jerárquica:  {dist['Jerarquica']:5.1f}%                 
-                                                               
-
+📈 DISTRIBUCIÓN RELATIVA
+  🔵 Adhocracia: {distribucion["Adhocracia"]:5.1f} %
+  🟢 Clan:       {distribucion["Clan"]:5.1f} %
+  🟠 Mercado:    {distribucion["Mercado"]:5.1f} %
+  ⚪ Jerárquica: {distribucion["Jerarquica"]:5.1f} %
 """
-    return informe
+
+    return informe.strip()

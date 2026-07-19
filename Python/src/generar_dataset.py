@@ -6,7 +6,7 @@ organizacionales del framework EBLET.
 
 Genera:
 - 5 escenarios × 50 empresas × 50 empleados = 12,500 empleados
-- 72 preguntas Likert por empleado (incluye CVF)
+- 67 preguntas Likert por empleado (incluye CVF)
 - KPIs, costes de rotación y validación
 """
 
@@ -29,9 +29,13 @@ from scores import (
     validar_clasificacion,
     analisis_fiabilidad
 )
-from costes_rotacion import calcular_coste_rotacion_empleado
+
 from exportador import exportar_dataset_escenario
 from config import SCENARIOS as ESCENARIOS
+from costes_rotacion import (
+    calcular_coste_rotacion_empleado,
+    kpi_a_tasa_rotacion,
+)
 
 
 def generar_dataset_escenario(escenario, n_empresas=50, n_empleados=2500, seed=42):
@@ -117,20 +121,40 @@ def generar_dataset_escenario(escenario, n_empresas=50, n_empleados=2500, seed=4
     print(f"   ✅ Coste total estimado: {coste_total:,.2f}€")
     print(f"   ✅ Coste medio por empleado: {coste_medio:,.2f}€")
     
+
     # PASO 7: VALIDAR CLASIFICACIÓN
-   
-    print(f"\n🔍 Paso 7: Validando clasificación de escenarios...")
+
+
+    print("\n🔍 Paso 7: Validando clasificación de escenarios...")
+
+    # Calcular KPIs agregados por empresa
     df_kpis_empresa = calcular_kpis_empresa(df_con_kpis)
-    df_empresas_clasificadas = clasificar_escenario_empresa(df_kpis_empresa)
-    
-    df_validacion = validar_clasificacion(df_empresas, df_empresas_clasificadas)
-    n_correctas = df_validacion["clasificacion_correcta"].sum()
+
+    # Clasificar cada empresa según sus KPIs
+    df_empresas_clasificadas = clasificar_escenario_empresa(
+        df_kpis_empresa
+    )
+
+    # Comparar el escenario original con el escenario predicho
+    df_validacion = validar_clasificacion(
+        df_empresas,
+        df_empresas_clasificadas,
+    )
+
+    # Calcular precisión
+    n_correctas = int(
+        df_validacion["clasificacion_correcta"].sum()
+    )
+
     n_total = len(df_validacion)
-    pct_correctas = (n_correctas / n_total) * 100
+
+    pct_correctas = (
+        n_correctas / n_total * 100
+        if n_total > 0
+        else 0
+    )
+
     
-    print(f"   ✅ Clasificación validada: {n_correctas}/{n_total} correctas ({pct_correctas:.1f}%)")
-    
-  
     # PASO 8: CALCULAR FIABILIDAD
    
     print(f"\n🔬 Paso 8: Calculando fiabilidad (Alfa de Cronbach)...")
@@ -161,7 +185,17 @@ def generar_dataset_escenario(escenario, n_empresas=50, n_empleados=2500, seed=4
     
     return df_empresas, df_con_kpis
 
+from pathlib import Path
 
+print(
+    "📁 Generador ejecutado desde:",
+    Path.cwd().resolve(),
+)
+
+print(
+    "📁 Datasets generados en:",
+    (Path.cwd() / "datasets").resolve(),
+)
 def generar_todos_los_escenarios(n_empresas=50, n_empleados=2500):
     """
     Genera datasets para todos los escenarios.
@@ -177,11 +211,10 @@ def generar_todos_los_escenarios(n_empresas=50, n_empleados=2500):
     print("🚀 INICIANDO GENERACIÓN DE DATASETS EBLET v2.0")
     print("="*60)
     
-    print("\n📋 Instrumentos validados:")
+    print("\n📋 Dimensiones basadas en instrumentos de referencia:")
     print("   - MBI-GS (Burnout)")
     print("   - EAL (Aburrimiento Laboral)")
     print("   - WHO-5 (Bienestar)")
-    print("   - Rothlin & Werder (Infraocupación)")
     print("   - Bandura (Autoeficacia)")
     print("   - Mobley (Rotación)")
     print("   - SHRM/Gallup (Costes de Rotación)")
@@ -192,7 +225,7 @@ def generar_todos_los_escenarios(n_empresas=50, n_empleados=2500):
     # Crear directorios
     from exportador import crear_directorios
     crear_directorios()
-    print("✅ Directorios de datasets creados")
+  
     
     # Generar cada escenario
     todos_empresas = []
@@ -242,16 +275,7 @@ def generar_todos_los_escenarios(n_empresas=50, n_empleados=2500):
         coste_esc = df_esc["coste_rotacion_individual"].sum()
         # Estimación de bajas
         kpi_rot = df_esc["kpi_rotacion"].mean()
-        if kpi_rot <= 1.5:
-            tasa = 0.05
-        elif kpi_rot <= 2.5:
-            tasa = 0.10
-        elif kpi_rot <= 3.5:
-            tasa = 0.20
-        elif kpi_rot <= 4.5:
-            tasa = 0.35
-        else:
-            tasa = 0.50
+        tasa = kpi_a_tasa_rotacion(kpi_rot)
         n_bajas = int(len(df_esc) * tasa)
         
         nombre_esc = escenario.replace("_", " ").title()

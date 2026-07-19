@@ -13,29 +13,37 @@ Referencias:
 """
 
 import pandas as pd
-import numpy as np
 
-from config import FACTORES_PERFIL
+
+from config import(
+    FACTORES_PERFIL,
+    TRAMOS_ROTACION
+)
 
 
 
 # TASAS DE ROTACIÓN SEGÚN KPI
 
 
-def kpi_a_tasa_rotacion(kpi_rotacion):
+def kpi_a_tasa_rotacion(kpi_rotacion: float) -> float:
     """
-    Convierte el KPI de rotación (1-5) a tasa de rotación anual estimada.
+    Convierte el KPI de intención de cambio en una tasa anual estimada.
+
+    La conversión representa un supuesto de escenarios del framework,
+    no una probabilidad calibrada con datos reales.
     """
-    if kpi_rotacion <= 1.5:
-        return 0.05   # 5%
-    elif kpi_rotacion <= 2.5:
-        return 0.10   # 10%
-    elif kpi_rotacion <= 3.5:
-        return 0.20   # 20%
-    elif kpi_rotacion <= 4.5:
-        return 0.35   # 35%
-    else:
-        return 0.50   # 50%
+    if not 1 <= kpi_rotacion <= 5:
+        raise ValueError(
+            "kpi_rotacion debe estar comprendido entre 1 y 5."
+        )
+
+    for tramo in TRAMOS_ROTACION:
+        if kpi_rotacion <= tramo["max_kpi"]:
+            return tramo["tasa"]
+
+    raise RuntimeError(
+        "No se pudo convertir el KPI de rotación."
+    )
 
 
 def tasa_rotacion_a_categoria(tasa):
@@ -59,7 +67,8 @@ def calcular_coste_rotacion_empleado(row):
     Calcula el coste esperado de rotación para un empleado individual.
     
     Fórmula:
-        Coste_Esperado = (Salario × Factor_Perfil) × Probabilidad_Salida
+        Coste_Esperado = (salario × Factor_Perfil × Tasa_Salida_Estimada
+)
     """
     salario = row["salario"]
     seniority = row["seniority"]
@@ -71,11 +80,11 @@ def calcular_coste_rotacion_empleado(row):
     # Coste de reemplazo si el empleado se va
     coste_reemplazo = salario * factor
     
-    # Probabilidad de que se vaya (basada en KPI rotación)
-    probabilidad_salida = kpi_a_tasa_rotacion(kpi_rot)
+    # Tasa anual estimada según el KPI de intención de cambio
+    tasa_salida_estimada = kpi_a_tasa_rotacion(kpi_rot)
     
-    # Coste esperado (coste × probabilidad)
-    coste_esperado = coste_reemplazo * probabilidad_salida
+    # Coste esperado según el escenario de salida
+    coste_esperado = coste_reemplazo * tasa_salida_estimada
     
     return round(coste_esperado, 2)
 
@@ -151,7 +160,7 @@ def calcular_costes_escenario(df_empleados):
         calcular_coste_rotacion_empleado, axis=1
     )
     
-    costes_escenario = df.groupby("escenario_nombre").agg({
+    costes_escenario = df.groupby("escenario").agg({
         "coste_rotacion_individual": ["sum", "mean"],
         "empleado_id": "count",
         "kpi_rotacion": "mean",
@@ -208,7 +217,7 @@ def generar_recomendaciones_roi(costes_empresa):
     for _, row in costes_empresa.iterrows():
         empresa_id = row["empresa_id"]
         coste_actual = row["coste_total_rotacion"]
-        escenario = row.get("escenario_nombre", "desconocido")
+        escenario = row.get("escenario", "desconocido")
         
         # Intervención sugerida: 25% del coste actual
         coste_intervencion = coste_actual * 0.25

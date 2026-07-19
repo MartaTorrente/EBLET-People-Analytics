@@ -1,92 +1,187 @@
 """
 Exportador de Datasets
 
-Exporta los datasets generados a CSV en la estructura de carpetas por escenario.
+Exporta y carga los datasets generados utilizando una ruta fija
+relativa a la raíz del proyecto.
 """
 
-import pandas as pd
 from pathlib import Path
+
+import pandas as pd
+
 from config import SCENARIOS
 
 
-def crear_directorios():
-    """Crea los directorios necesarios para los datasets."""
- 
-    
-    Path("datasets").mkdir(exist_ok=True)
-    
+SRC_DIR = Path(__file__).resolve().parent
+PROJECT_DIR = SRC_DIR.parent
+DATASETS_DIR = PROJECT_DIR / "datasets"
+
+
+def crear_directorios() -> None:
+    """
+    Crea la estructura de directorios necesaria para los datasets.
+    """
+    DATASETS_DIR.mkdir(
+        parents=True,
+        exist_ok=True,
+    )
+
     for escenario in SCENARIOS:
-        Path(f"datasets/{escenario}").mkdir(parents=True, exist_ok=True)
-    
-    print("✅ Directorios de datasets creados")
+        (
+            DATASETS_DIR / escenario
+        ).mkdir(
+            parents=True,
+            exist_ok=True,
+        )
+
+    print(
+        f"✅ Directorios de datasets creados en: "
+        f"{DATASETS_DIR}"
+    )
 
 
-def exportar_dataset_escenario(escenario, df_empresas, df_empleados):
+def exportar_dataset_escenario(
+    escenario: str,
+    df_empresas: pd.DataFrame,
+    df_empleados: pd.DataFrame,
+) -> None:
     """
-    Exporta dataset de un escenario a CSV.
-    
+    Exporta los datasets de un escenario a CSV.
+
     Args:
-        escenario: Nombre del escenario (string)
-        df_empresas: DataFrame de empresas
-        df_empleados: DataFrame de empleados con KPIs
+        escenario:
+            Nombre del escenario.
+        df_empresas:
+            DataFrame de empresas.
+        df_empleados:
+            DataFrame de empleados con KPIs.
     """
-    # 🆕 VALIDACIÓN DE TIPOS
+    if escenario not in SCENARIOS:
+        raise ValueError(
+            f"Escenario no válido: {escenario!r}"
+        )
+
     if not isinstance(df_empresas, pd.DataFrame):
         raise TypeError(
-            f"df_empresas debe ser DataFrame, es {type(df_empresas).__name__}: {df_empresas}"
+            "df_empresas debe ser un DataFrame."
         )
+
     if not isinstance(df_empleados, pd.DataFrame):
         raise TypeError(
-            f"df_empleados debe ser DataFrame, es {type(df_empleados).__name__}"
+            "df_empleados debe ser un DataFrame."
         )
-    
-    ruta_base = f"datasets/{escenario}"
-    Path(ruta_base).mkdir(parents=True, exist_ok=True)
-    
-    # Exportar empresas
-    df_empresas.to_csv(f"{ruta_base}/empresas.csv", index=False)
-    
-    # Exportar empleados
-    df_empleados.to_csv(f"{ruta_base}/empleados.csv", index=False)
-    
-    # Exportar KPIs de empresa
+
+    ruta_base = DATASETS_DIR / escenario
+
+    ruta_base.mkdir(
+        parents=True,
+        exist_ok=True,
+    )
+
+    df_empresas.to_csv(
+        ruta_base / "empresas.csv",
+        index=False,
+    )
+
+    df_empleados.to_csv(
+        ruta_base / "empleados.csv",
+        index=False,
+    )
+
     try:
         from scores import calcular_kpis_empresa
-        df_kpis = calcular_kpis_empresa(df_empleados)
-        df_kpis.to_csv(f"{ruta_base}/kpis_empresa.csv", index=False)
-    except Exception as e:
-        print(f"   ⚠️ No se pudieron exportar KPIs de empresa: {e}")
+
+        df_kpis = calcular_kpis_empresa(
+            df_empleados
+        )
+
+        df_kpis.to_csv(
+            ruta_base / "kpis_empresa.csv",
+            index=False,
+        )
+
+    except Exception as error:
+        print(
+            "   ⚠️ No se pudieron exportar "
+            f"los KPIs de empresa: {error}"
+        )
 
 
-def exportar_dataset_completo(df_empresas, df_empleados):
-    """Exporta dataset completo unificado."""
-    df_empresas.to_csv("datasets/empresas_completo.csv", index=False)
-    df_empleados.to_csv("datasets/empleados_completo.csv", index=False)
+def exportar_dataset_completo(
+    df_empresas: pd.DataFrame,
+    df_empleados: pd.DataFrame,
+) -> None:
+    """
+    Exporta los datasets consolidados.
+    """
+    DATASETS_DIR.mkdir(
+        parents=True,
+        exist_ok=True,
+    )
+
+    df_empresas.to_csv(
+        DATASETS_DIR / "empresas_completo.csv",
+        index=False,
+    )
+
+    df_empleados.to_csv(
+        DATASETS_DIR / "empleados_completo.csv",
+        index=False,
+    )
 
 
-def cargar_dataset_escenario(escenario):
-    """Carga dataset de un escenario desde CSV."""
-    ruta_base = f"datasets/{escenario}"
-    
-    df_empresas = pd.read_csv(f"{ruta_base}/empresas.csv")
-    df_empleados = pd.read_csv(f"{ruta_base}/empleados.csv")
-    
+def cargar_dataset_escenario(
+    escenario: str,
+) -> tuple[pd.DataFrame, pd.DataFrame]:
+    """
+    Carga los datasets de empresas y empleados de un escenario.
+    """
+    if escenario not in SCENARIOS:
+        raise ValueError(
+            f"Escenario no válido: {escenario!r}"
+        )
+
+    ruta_base = DATASETS_DIR / escenario
+
+    df_empresas = pd.read_csv(
+        ruta_base / "empresas.csv"
+    )
+
+    df_empleados = pd.read_csv(
+        ruta_base / "empleados.csv"
+    )
+
     return df_empresas, df_empleados
 
 
-def resumen_datasets():
-    """Muestra resumen de todos los datasets."""
-    from config import SCENARIOS
-    
-    print("\n" + "="*60)
+def resumen_datasets() -> None:
+    """
+    Muestra un resumen de los datasets disponibles.
+    """
+    print("\n" + "=" * 60)
     print("RESUMEN DE DATASETS")
-    print("="*60)
-    
+    print("=" * 60)
+
     for escenario in SCENARIOS:
         try:
-            df_empresas, df_empleados = cargar_dataset_escenario(escenario)
+            df_empresas, df_empleados = (
+                cargar_dataset_escenario(
+                    escenario
+                )
+            )
+
             print(f"\n📊 {escenario.upper()}:")
-            print(f"   Empresas: {len(df_empresas)}")
-            print(f"   Empleados: {len(df_empleados)}")
+            print(
+                f"   Empresas: "
+                f"{len(df_empresas)}"
+            )
+            print(
+                f"   Empleados: "
+                f"{len(df_empleados)}"
+            )
+
         except FileNotFoundError:
-            print(f"\n⚠️ {escenario.upper()}: Dataset no encontrado")
+            print(
+                f"\n⚠️ {escenario.upper()}: "
+                "Dataset no encontrado"
+            )
