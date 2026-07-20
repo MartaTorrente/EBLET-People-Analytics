@@ -48,9 +48,7 @@ Organización / Persona
             │
             ▼
  Benchmark + Comparación
-            │
-            ▼
- Dashboard e Informe
+
 ```
 ## 📷 EBLET en acción
 
@@ -141,7 +139,7 @@ Los escenarios son:
 - 🔴 Crítico
 
 
-### ### Representación del benchmark mediante PCA
+### Representación del benchmark mediante PCA
 
 La reducción de dimensionalidad mediante Análisis de Componentes Principales (PCA) permite visualizar la separación entre los distintos escenarios organizacionales utilizados en el benchmark.
 
@@ -185,8 +183,6 @@ EBLET/
 ├── datasets/
 ├── notebooks/
 ├── src/
-├── streamlit/
-├── assets/
 ├── README.md
 └── requirements.txt
 ```
