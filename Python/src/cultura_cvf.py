@@ -22,7 +22,7 @@ from config import (
 from estilos import COLORES_CULTURA
 
 
-# Alias conservado por compatibilidad con notebooks existentes.
+
 COLORES_CVF = COLORES_CULTURA
 
 

@@ -1,5 +1,5 @@
 """
-EBLET-Lite v2.1 - Cálculo de KPIs desde 23 preguntas
+EBLET-Lite  - Cálculo de KPIs desde 23 preguntas
 =====================================================
 Mapeo de preguntas de la encuesta de Google Forms:
 - q10-q13: Burnout (4 preguntas)

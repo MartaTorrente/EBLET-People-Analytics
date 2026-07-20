@@ -6,10 +6,6 @@ Calcula el impacto económico de la rotación laboral basado en:
 - Gallup: 50%-200% del salario anual
 - Cobee/Pluxee: metodología detallada
 
-Referencias:
-- https://cobee.io/blog/calcular-costes-rotacion-laboral/
-- SHRM (Society for Human Resource Management)
-- Gallup Workplace Studies
 """
 
 import pandas as pd
@@ -219,7 +215,7 @@ def generar_recomendaciones_roi(costes_empresa):
         coste_actual = row["coste_total_rotacion"]
         escenario = row.get("escenario", "desconocido")
         
-        # Intervención sugerida: 25% del coste actual
+       
         coste_intervencion = coste_actual * 0.25
         
         # Diferentes escenarios de reducción

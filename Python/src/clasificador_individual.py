@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-EBLET v2.2 - Clasificador Individual de Perfiles de Bienestar
+EBLET - Clasificador Individual de Perfiles de Bienestar
 =============================================================
 
 Clasifica a cada persona en uno de los cinco perfiles principales

@@ -24,7 +24,7 @@ print(
     (Path.cwd() / "datasets").resolve()
 )
 
-# 1. ESTRUCTURA DE LA ENCUESTA (v2.0)
+# 1. ESTRUCTURA DE LA ENCUESTA 
 
 
 # Rangos de preguntas por dimensión (numeración Likert 1-67)
@@ -127,7 +127,7 @@ CODIGOS_ESCENARIO = {
     "critico": "CRI",
 }
 
-# 3. EFECTOS DE CULTURA ORGANIZACIONAL (CVF - Cameron & Quinn)
+# 3. EFECTOS DE CULTURA ORGANIZACIONAL (CVF - Cameron y Quinn)
 
 # Basado en el Competing Values Framework:
 # - Adhocracia: Externo + Flexible → Innovación, creatividad
@@ -152,7 +152,7 @@ CULTURE_EFFECTS = {
 #
 # 4. EFECTOS DE MODALIDAD DE TRABAJO
 
-# Basado en estudios post-pandemia (Bloom, 2022; Oakman et al., 2020)
+
 
 MODALITY_EFFECTS = {
     "Presencial": {"burnout": +0.10, "boreout": -0.10, "wellbeing": -0.05},
@@ -200,7 +200,7 @@ N_EMPLEADOS_DEFAULT = 2500
 N_EMPRESAS_DEFAULT = 50
 
 # Desviaciones estándar para generación de respuestas
-# Aumentados para reflejar variabilidad individual real
+
 
 STD_LATENTE = 0.5       # Reducido de 0.7 a 0.5
 STD_RUIDO = 0.3         # Reducido de 0.4 a 0.3
