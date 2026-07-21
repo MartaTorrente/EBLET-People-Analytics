@@ -1,13 +1,11 @@
 # 📊 EBLET
-## Herramienta de Bienestar Laboral y Experiencia en el Trabajo
-
-> Framework de **People Analytics** para la evaluación del bienestar laboral, la cultura organizacional y el riesgo de rotación mediante analítica de datos y modelos psicométricos validados.
+## Framework de **People Analytics** para la evaluación del bienestar laboral, la cultura organizacional y el riesgo de rotación mediante analítica de datos y modelos psicométricos validados.
 
 ---
 
 ## 🎯 Descripción
 
-EBLET es un proyecto de **Data Analytics aplicado a Recursos Humanos** cuyo objetivo es proporcionar una herramienta capaz de evaluar el estado de una organización a partir de las respuestas de sus empleados.
+EBLET es un proyecto de **Data Analytics aplicado a Recursos Humanos** cuyo objetivo es proporcionar una herramienta evaluar el bienestar organizacional, la cultura y los riesgos psicosociales mediante analítica de datos.
 
 El framework integra diferentes instrumentos psicométricos ampliamente utilizados en investigación para medir:
 
@@ -121,9 +119,9 @@ El framework calcula automáticamente:
 
 ---
 
-# 📈 Benchmark organizacional
+# 📈 Benchmark organizacional sintético
 
-Para contextualizar los resultados obtenidos, el proyecto incorpora un benchmark sintético diseñado específicamente para EBLET, compuesto por:
+Construido mediante un modelo probabilístico basado en estados latentes organizacionales, para contextualizar los resultados obtenidos,  Compuesto por:
 
 - 250 organizaciones
 - 12.500 empleados
@@ -158,7 +156,7 @@ El benchmark ha sido validado mediante diferentes técnicas estadísticas:
 - ANOVA
 - Alfa de Cronbach
 - Análisis de Componentes Principales (PCA)
-- Análisis factorial
+
 
 ---
 
@@ -169,7 +167,6 @@ El benchmark ha sido validado mediante diferentes técnicas estadísticas:
 - NumPy
 - Plotly
 - Scikit-Learn
-- Streamlit
 - Google Forms
 - OpenPyXL
 
