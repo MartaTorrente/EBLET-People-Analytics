@@ -3,7 +3,7 @@
 
 ---
 
-## 🎯 Descripción
+## Descripción
 
 EBLET es un proyecto de **Data Analytics aplicado a Recursos Humanos** cuyo objetivo es proporcionar una herramienta evaluar el bienestar organizacional, la cultura y los riesgos psicosociales mediante analítica de datos.
 
@@ -20,7 +20,7 @@ La información obtenida se compara con un **benchmark sintético** desarrollado
 
 ---
 
-# 🚀 Objetivos del proyecto
+# Objetivos del proyecto
 
 - Diseñar un framework reproducible de People Analytics.
 - Construir un benchmark organizacional mediante datos sintéticos.
@@ -30,7 +30,7 @@ La información obtenida se compara con un **benchmark sintético** desarrollado
 
 ---
 
-# 🧠 Arquitectura del proyecto
+# Arquitectura del proyecto
 
 ```
 Organización / Persona
@@ -71,9 +71,9 @@ Además del diagnóstico organizacional, EBLET estima el impacto económico asoc
 ![visualizaciones/legacytech_impacto_economico_estimado.png](visualizaciones/legacytech_impacto_economico_estimado.png)
 ---
 
-# 📦 Versiones del sistema
+# Versiones del sistema
 
-## 🏢 EBLET Enterprise
+## EBLET Enterprise
 
 Pensado para organizaciones.
 
@@ -89,7 +89,7 @@ Permite:
 
 ---
 
-## 👤 EBLET Lite
+## EBLET Lite
 
 Versión individual.
 
@@ -104,7 +104,7 @@ Permite a cualquier profesional conocer su situación respecto a:
 
 ---
 
-# 📊 KPIs calculados
+# KPIs calculados
 
 El framework calcula automáticamente:
 
@@ -119,7 +119,7 @@ El framework calcula automáticamente:
 
 ---
 
-# 📈 Benchmark organizacional sintético
+# Benchmark organizacional sintético
 
 Construido mediante un modelo probabilístico basado en estados latentes organizacionales, para contextualizar los resultados obtenidos,  Compuesto por:
 
@@ -147,7 +147,7 @@ La reducción de dimensionalidad mediante Análisis de Componentes Principales (
 
 ---
 
-# 🔬 Validación estadística
+# Validación estadística
 
 El benchmark ha sido validado mediante diferentes técnicas estadísticas:
 
@@ -160,7 +160,7 @@ El benchmark ha sido validado mediante diferentes técnicas estadísticas:
 
 ---
 
-# 🛠️ Tecnologías utilizadas
+# Tecnologías utilizadas
 
 - Python
 - Pandas
@@ -172,7 +172,7 @@ El benchmark ha sido validado mediante diferentes técnicas estadísticas:
 
 ---
 
-# 📁 Estructura del proyecto
+# Estructura del proyecto
 
 ```
 EBLET/
@@ -186,7 +186,7 @@ EBLET/
 
 ---
 
-# 📚 Instrumentos psicométricos
+# Instrumentos psicométricos
 
 El framework integra escalas ampliamente utilizadas en la literatura científica:
 
@@ -199,7 +199,7 @@ El framework integra escalas ampliamente utilizadas en la literatura científica
 
 ---
 
-# 💡 Principales funcionalidades
+# Principales funcionalidades
 
 ✔ Generación automática de datasets sintéticos.
 
@@ -219,13 +219,13 @@ El framework integra escalas ampliamente utilizadas en la literatura científica
 
 ---
 
-# 📄 Documentación
+# Documentación
 
 La documentación técnica y metodológica se encuentra distribuida entre los notebooks del proyecto y este repositorio.
 
 ---
 
-# 👨‍💻 Autora
+# Autora
 
 **Marta Torrente**
 
